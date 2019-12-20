@@ -20,7 +20,8 @@
                 <el-input v-model="select_word" placeholder="标题" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
             </div>
-            <tableCom :tableData="tableData" :rowNum="this.rowNum" :tableEle="tableEle" v-on:getPageNumber="getPageNumber">
+            <tableCom :tableData="tableData" :rowNum="this.rowNum" :tableEle="tableEle" :total="this.total"
+                      v-on:getPageNumber="getPageNumber">
                 <el-table-column slot="btn-operation"
                                  fixed="right"
                                  label="操作"
@@ -87,7 +88,8 @@
                 tableEle,
                 select_word: '',
                 rowNum: 2,
-                pageNumber:1
+                pageNumber:1,
+                total:0
             }
         },
         created() {
@@ -95,17 +97,19 @@
         },
         methods: {
             getPageNumber(pageNumber){
-                this.pageNumber = pageNumber
+                this.pageNumber = pageNumber;
+                this.getData()
             },
             getData() {
                 getUsers({
-                    userName: "",
+                    name: "",
                     phone: "",
                     pageNumber: this.pageNumber,
                     pageSize: this.rowNum
                 }).then(res => {
                     this.tableData = res.data.list;
-                    console.log(this.tableData);
+                    this.total = res.data.total;
+                    // console.log(this.tableData);
                 })
             },
         },

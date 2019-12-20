@@ -18,7 +18,7 @@
         <!--分页-开始-->
         <div class="pagination">
                 <el-pagination background layout="total, prev, pager, next" @current-change="handleCurrentChange"
-                               :total="this.tableData.length" :page-size="page_size" :current-page="currentPage">
+                               :total="this.total" :page-size="this.rowNum" :current-page="currentPage">
                 </el-pagination>
         </div>
         <!--分页-结束-->
@@ -26,16 +26,13 @@
 </template>
 <script>
     export default {
-        created(){
-            console.log(this.tableData.length)
-        },
         data() {
             return {
                 // 当前页
                 currentPage: 1
             }
         },
-        props: ['tableEle', 'tableData', 'rowNum'],
+        props: ['tableEle', 'tableData', 'rowNum', 'total'],
         mounted() {
         },
         methods: {
