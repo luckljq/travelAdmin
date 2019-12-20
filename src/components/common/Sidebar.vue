@@ -41,7 +41,7 @@
                     {
                         icon: 'el-icon-lx-cascades',
                         index: '1',
-                        title: '内容管理',
+                        title: '景点管理',
                         subs: [
                             {
                                 index: 'slides',
@@ -70,7 +70,7 @@
                         title: '系统管理',
                         subs: [
                             {
-                                index: 'upload',
+                                index: 'users',
                                 title: '用户管理'
                             },
                             {

@@ -15,6 +15,13 @@ export default new Router({
             component: resolve => require(['../components/common/Home.vue'], resolve),
             meta: { title: '主页' },
             children:[
+                //系统管理start
+                {
+                    path: '/users',
+                    component: resolve => require(['../components/sys/UserList.vue'], resolve),
+                    meta: { title: '用户列表' }
+                },
+                //系统管理END
                 {
                     path: '/dashboard',
                     component: resolve => require(['../components/page/Dashboard.vue'], resolve),
@@ -25,6 +32,7 @@ export default new Router({
                     component: resolve => require(['../components/cms/slideList.vue'], resolve),
                     meta: { title: '轮播列表' }
                 },
+
                 {
                     path: '/slide/details',
                     name: 'slideDetails',
