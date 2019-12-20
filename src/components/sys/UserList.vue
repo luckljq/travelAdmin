@@ -17,7 +17,8 @@
         <div class="container">
             <div class="handle-box">
                 <el-button type="primary" icon="el-icon-circle-plus" class="handle-del mr10">增加</el-button>
-                <el-input v-model="select_word" placeholder="标题" class="handle-input mr10"></el-input>
+                <el-input v-model="name" placeholder="用户昵称模糊查询" class="handle-input mr10"></el-input>
+                <el-input v-model="phone" placeholder="用户号码准确查询" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
             </div>
             <tableCom :tableData="tableData" :rowNum="this.rowNum" :tableEle="tableEle" :total="this.total"
@@ -84,12 +85,15 @@
     export default {
         data() {
             return {
+                //表格初始化
                 tableData: [],
                 tableEle,
-                select_word: '',
                 rowNum: 2,
                 pageNumber:1,
-                total:0
+                total:0,
+                //查询条件
+                name: '',
+                phone:''
             }
         },
         created() {
@@ -102,11 +106,19 @@
             },
             getData() {
                 getUsers({
-                    name: "",
-                    phone: "",
+                    name: this.name,
+                    phone: this.phone,
                     pageNumber: this.pageNumber,
                     pageSize: this.rowNum
                 }).then(res => {
+                    let list = res.data.list;
+                    list.forEach( list=>{
+                        if (list.isEnable === 0) {
+                            list.isEnable = '禁用'
+                        } else {
+                            list.isEnable = '可用'
+                        }
+                    });
                     this.tableData = res.data.list;
                     this.total = res.data.total;
                     // console.log(this.tableData);
@@ -128,7 +140,7 @@
     }
 
     .handle-input {
-        width: 300px;
+        width: 200px;
         display: inline-block;
     }
 
