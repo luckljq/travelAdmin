@@ -58,7 +58,7 @@
                     username: this.ruleForm.username,
                     password: this.ruleForm.password
                 }).then(response => {
-                    console.log(response.data);
+                    // console.log(response.data);
                     if (response.data !== null) {
                         this.items = response.data;
                         sessionStorage.setItem('state','已登陆');
