@@ -6,7 +6,7 @@
 */
 <template>
     <div>
-        <el-table :data="tableData_changge" border class="table" ref="multipleTable">
+        <el-table :data="tableData" border class="table" ref="multipleTable">
             <el-table-column v-for="(ele,i) in  tableEle" :key="i"
                              :fixed="ele.fixed"
                              :prop="ele.prop"
@@ -18,7 +18,7 @@
         <!--分页-开始-->
         <div class="pagination">
                 <el-pagination background layout="total, prev, pager, next" @current-change="handleCurrentChange"
-                               :total="total" :page-size="page_size" :current-page="currentPage">
+                               :total="this.tableData.length" :page-size="page_size" :current-page="currentPage">
                 </el-pagination>
         </div>
         <!--分页-结束-->
@@ -26,12 +26,11 @@
 </template>
 <script>
     export default {
+        created(){
+            console.log(this.tableData.length)
+        },
         data() {
             return {
-                // 总条数
-                total: this.tableData.length,
-                tableData_changge: this.tableData.slice(0, this.rowNum),
-                page_size: this.rowNum,
                 // 当前页
                 currentPage: 1
             }
@@ -40,21 +39,14 @@
         mounted() {
         },
         methods: {
+            getPageNumber(pageNumber) {
+                this.$emit("getPageNumber",pageNumber)
+            },
             handleCurrentChange(val) {
                 let pageNum = this.rowNum;
                 let vm = this;
                 this.currentPage = val;
-                let aa = this.currentPage - 1;
-                let startPage = aa * pageNum;
-                let endPage = parseInt(this.currentPage * pageNum);
-                if (!(vm.tableData.length > endPage)) {
-                    endPage = vm.tableData.length
-                }
-                let list = [];
-                for (let i = startPage; i < endPage; i++) {
-                    list.push(vm.tableData[i])
-                }
-                vm.tableData_changge = list
+                this.getPageNumber(val);
             }
         }
     }

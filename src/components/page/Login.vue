@@ -60,8 +60,9 @@
                 }).then(response => {
                     console.log(response.data);
                     if (response.data !== null) {
-                        sessionStorage.setItem('state','已登陆');
                         this.items = response.data;
+                        sessionStorage.setItem('state','已登陆');
+                        sessionStorage.setItem('token',this.items.token);
                         this.$store.dispatch('asyncUpdateUser', {username:this.items.user.userName,token:this.items.token});
                         sessionStorage.setItem('UserState', JSON.stringify(this.$store.state.user));
                         this.$router.push('/dashboard');

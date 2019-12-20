@@ -1,3 +1,9 @@
+/**
+ * description：用户列表页面
+ *
+ * @author ljq
+ * @date 2019/12/20　10:51
+ */
 <template slot-scope="scope">
     <div class="sidebar">
         <div class="crumbs">
@@ -11,48 +17,27 @@
         <div class="container">
             <div class="handle-box">
                 <el-button type="primary" icon="el-icon-circle-plus" class="handle-del mr10">增加</el-button>
-                <el-select
-                        v-model="select_cate_position"
-                        placeholder="显示位置"
-                        class="handle-select mr10"
-                        @change="getData"
-                >
-                    <el-option key="1" label="启动页" value="2"></el-option>
-                    <el-option key="2" label="登录页" value="1"></el-option>
-                    <el-option key="3" label="首页" value="0"></el-option>
-                </el-select>
-                <el-select
-                        v-model="select_cate_isEnable"
-                        placeholder="状态"
-                        class="handle-select mr10"
-                        @change="getData"
-                >
-                    <el-option key="1" label="启用" value="1"></el-option>
-                    <el-option key="2" label="禁用" value="0"></el-option>
-                </el-select>
                 <el-input v-model="select_word" placeholder="标题" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
             </div>
-            <tableCom :tableData="tableData" :rowNum="5" :tableEle="tableEle">
+            <tableCom :tableData="tableData" :rowNum="this.rowNum" :tableEle="tableEle" v-on:getPageNumber="getPageNumber">
                 <el-table-column slot="btn-operation"
                                  fixed="right"
                                  label="操作"
                                  width="300px">
                     <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-info" @click="handleDetails(scope.row)">查看</el-button>
+                        <el-button type="text" icon="el-icon-info">查看</el-button>
                         <el-button
                                 type="text"
                                 icon="el-icon-edit"
-                                @click="handleEdit(scope.$index, scope.row)"
                         >编辑
                         </el-button>
-                        <el-button type="text" icon="el-icon-edit" @click="editEnable(scope.row.id)">启用</el-button>
-                        <el-button type="text" icon="el-icon-edit" @click="editNotEnable(scope.row.id)">禁用</el-button>
+                        <el-button type="text" icon="el-icon-edit">启用</el-button>
+                        <el-button type="text" icon="el-icon-edit">禁用</el-button>
                         <el-button
                                 type="text"
                                 icon="el-icon-delete"
                                 class="red"
-                                @click="handleDelete(scope.$index, scope.row)"
                         >删除
                         </el-button>
                     </template>
@@ -63,81 +48,66 @@
 </template>
 <script>
     import tableCom from '../common/Table.vue'
-    let tableData = [{
-        date: 'ins-fargqeu',
-        province: '运行中',
-        city: '亚太区 ',
-        address: '标准型S1 ',
-        zip: '1核 8GB 1Mbps',
-        ip: '192.202.34.24'
-    }, {
-        date: 'ins-qwerr',
-        province: '关机',
-        city: '亚太区 ',
-        address: '标准型S3 ',
-        zip: '1核 1GB 1Mbps',
-        ip: '198.292.34.24'
-    }, {
-        date: 'ins-qwerr',
-        province: '关机',
-        city: '亚太区 ',
-        address: '标准型S3 ',
-        zip: '1核 1GB 1Mbps',
-        ip: '198.292.34.24'
-    }, {
-        date: 'ins-qwerr',
-        province: '关机',
-        city: '亚太区 ',
-        address: '标准型S3 ',
-        zip: '1核 1GB 1Mbps',
-        ip: '198.292.34.24'
-    }];
+    import {getUsers} from '../../api/sysApi'
     let tableEle = [{
         fixed: 'left',
-        prop: 'date',
-        label: 'ID/主机名',
+        prop: 'userName',
+        label: '用户昵称',
         width: ''
     }, {
         fixed: '',
-        prop: 'province',
-        label: '状态',
+        prop: 'sex',
+        label: '性别',
         width: '120'
     }, {
         fixed: '',
-        prop: 'city',
-        label: '可用区',
+        prop: 'phone',
+        label: '电话',
         width: ''
     }, {
         fixed: '',
-        prop: 'address',
-        label: '主机类型',
+        prop: 'localName',
+        label: '所在地区',
         width: ''
     }, {
         fixed: '',
-        prop: 'zip',
-        label: '配置',
+        prop: 'email',
+        label: '电子邮箱',
         width: ''
     }, {
         fixed: '',
-        prop: 'ip',
-        label: 'IP地址',
+        prop: 'isEnable',
+        label: '状态',
         width: ''
     }];
     export default {
         data() {
             return {
-                tableData,
+                tableData: [],
                 tableEle,
-                rowNum: '2'
+                select_word: '',
+                rowNum: 2,
+                pageNumber:1
             }
         },
+        created() {
+            this.getData();
+        },
         methods: {
-            check() {
-                alert('查看功能')
+            getPageNumber(pageNumber){
+                this.pageNumber = pageNumber
             },
-            edit(row) {
-                console.log('编辑功能')
-            }
+            getData() {
+                getUsers({
+                    userName: "",
+                    phone: "",
+                    pageNumber: this.pageNumber,
+                    pageSize: this.rowNum
+                }).then(res => {
+                    this.tableData = res.data.list;
+                    console.log(this.tableData);
+                })
+            },
         },
         components: {
             tableCom
