@@ -39,6 +39,11 @@
                 collapse: false,
                 items: [
                     {
+                        icon: 'el-icon-lx-home',
+                        index: 'dashboard',
+                        title: '系统首页'
+                    },
+                    {
                         icon: 'el-icon-lx-cascades',
                         index: '1',
                         title: '景点管理',
