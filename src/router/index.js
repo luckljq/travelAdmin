@@ -21,6 +21,12 @@ export default new Router({
                     component: resolve => require(['../components/sys/UserList.vue'], resolve),
                     meta: { title: '用户列表' }
                 },
+                {
+                    path: '/user/edit',
+                    name:'userEdit',
+                    component: resolve => require(['../components/sys/UserEdit.vue'], resolve),
+                    meta: { title: '编辑用户' }
+                },
                 //系统管理END
                 {
                     path: '/dashboard',

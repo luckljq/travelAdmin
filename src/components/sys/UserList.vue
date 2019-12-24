@@ -28,10 +28,11 @@
                                  label="操作"
                                  width="300px">
                     <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-info">查看</el-button>
+                        <el-button type="text" icon="el-icon-info" >查看</el-button>
                         <el-button
                                 type="text"
                                 icon="el-icon-edit"
+                                @click="handleEdit(scope.row)"
                         >编辑
                         </el-button>
                         <el-button type="text" icon="el-icon-edit" @click="enableUser(scope.row.userId, 1)" >启用</el-button>
@@ -40,19 +41,29 @@
                                 type="text"
                                 icon="el-icon-delete"
                                 class="red"
+                                @click="handleDelete(scope.row)"
                         >删除
                         </el-button>
                     </template>
                 </el-table-column>
             </tableCom>
+
+            <!-- 删除提示框 -->
+            <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+              <div class="del-dialog-cnt">是否确定删除此用户？</div>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="delVisible = false">取 消</el-button>
+                <el-button type="primary" @click="deleteRow">确 定</el-button>
+              </span>
+            </el-dialog>
+
         </div>
     </div>
 </template>
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getUsers} from '../../api/sysApi'
-    import {editEnable} from '../../api/sysApi'
+    import {getUsers,editEnable,deleteUser} from '../../api/sysApi'
     //初始化表头
     let tableEle = [{
         fixed: 'left',
@@ -88,15 +99,17 @@
     export default {
         data() {
             return {
+                delVisible: false,
                 //表格初始化
                 tableData: [],
                 tableEle,
-                rowNum: 2,
+                rowNum: 5,
                 pageNumber:1,
                 total:0,
                 //查询条件
                 name: '',
-                phone:''
+                phone:'',
+                id:null
             }
         },
         //打开页面初始化
@@ -104,6 +117,32 @@
             this.getData();
         },
         methods: {
+            //跳转到编辑页面
+            handleEdit(row) {
+                this.$router.push({
+                    path:'/user/edit',
+                    name:'userEdit',
+                    params: {
+                        data: row
+                    }
+                });
+            },
+            //删除用户
+            deleteRow() {
+                deleteUser(this.id).then(res => {
+                    this.getData();
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    })
+                });
+                this.delVisible = false;
+            },
+            //删除页面显示
+            handleDelete(row) {
+                this.id = row.userId;
+                this.delVisible = true;
+            },
             //启用/禁用
             enableUser(id, i) {
                 editEnable({

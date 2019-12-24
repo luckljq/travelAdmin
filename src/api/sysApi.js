@@ -14,6 +14,13 @@ export const getUsers = (query) => {
     })
 };
 
+export const deleteUser = (id) => {
+    return request({
+        url: '/sys/user/'+id,
+        method: 'delete'
+    })
+};
+
 //启用、禁用
 export const editEnable = (query) => {
     return request({
