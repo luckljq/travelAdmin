@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {Message} from 'element-ui'
 
 let token = '';
 
@@ -19,18 +20,21 @@ service.interceptors.request.use( config => {
     }
     return config;
 }, error => {
+    Message.error("请求超时");
     console.log(error);
     return Promise.reject();
 });
 
 service.interceptors.response.use(response => {
-    if(response.status === 200){
-        return response.data;
+    if(response.status === 200 && response.data.code === -1){
+        Message.error({message: response.data.message});
+        return Promise.reject();
     }else{
-        Promise.reject();
+        return response.data;
     }
 }, error => {
     console.log(error);
+    Message.error({message: error.message});
     return Promise.reject();
 });
 
