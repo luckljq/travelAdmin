@@ -110,7 +110,10 @@
                     userId:id,
                     isEnable: i
                 }).then(res => {
-                    Message.success("操作成功");
+                    Message.success({
+                        message: '操作成功',
+                        center: true
+                    });
                     this.getData();
                 })
             },
