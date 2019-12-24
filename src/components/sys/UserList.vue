@@ -16,7 +16,7 @@
 
         <div class="container">
             <div class="handle-box">
-                <el-button type="primary" icon="el-icon-circle-plus" class="handle-del mr10">增加</el-button>
+<!--                <el-button type="primary" icon="el-icon-circle-plus" class="handle-del mr10">增加</el-button>-->
                 <el-input v-model="name" placeholder="用户昵称模糊查询" class="handle-input mr10"></el-input>
                 <el-input v-model="phone" placeholder="用户号码准确查询" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
@@ -34,8 +34,8 @@
                                 icon="el-icon-edit"
                         >编辑
                         </el-button>
-                        <el-button type="text" icon="el-icon-edit">启用</el-button>
-                        <el-button type="text" icon="el-icon-edit">禁用</el-button>
+                        <el-button type="text" icon="el-icon-edit" @click="enableUser(scope.row.userId, 1)" >启用</el-button>
+                        <el-button type="text" icon="el-icon-edit" @click="enableUser(scope.row.userId, 0)">禁用</el-button>
                         <el-button
                                 type="text"
                                 icon="el-icon-delete"
@@ -49,8 +49,11 @@
     </div>
 </template>
 <script>
+    import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
     import {getUsers} from '../../api/sysApi'
+    import {editEnable} from '../../api/sysApi'
+    //初始化表头
     let tableEle = [{
         fixed: 'left',
         prop: 'userName',
@@ -96,14 +99,27 @@
                 phone:''
             }
         },
+        //打开页面初始化
         created() {
             this.getData();
         },
         methods: {
+            //启用/禁用
+            enableUser(id, i) {
+                editEnable({
+                    userId:id,
+                    isEnable: i
+                }).then(res => {
+                    Message.success("操作成功");
+                    this.getData();
+                })
+            },
+            //翻页
             getPageNumber(pageNumber){
                 this.pageNumber = pageNumber;
                 this.getData()
             },
+            //获取用户列表
             getData() {
                 getUsers({
                     name: this.name,
