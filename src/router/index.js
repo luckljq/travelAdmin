@@ -34,18 +34,6 @@ export default new Router({
                     meta: { title: '系统首页' }
                 },
                 {
-                    path: '/slides',
-                    component: resolve => require(['../components/cms/slideList.vue'], resolve),
-                    meta: { title: '轮播列表' }
-                },
-
-                {
-                    path: '/slide/details',
-                    name: 'slideDetails',
-                    component: resolve => require(['../components/cms/slideDetails.vue'], resolve),
-                    meta: { title: '轮播详情' }
-                },
-                {
                     path: '/dashboard',
                     component: resolve => require(['../components/page/Dashboard.vue'], resolve),
                     meta: { title: '系统首页' }

@@ -49,7 +49,7 @@
             </tableCom>
 
             <!-- 编辑弹出框 -->
-            <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
+            <el-dialog title="编辑用户" :visible.sync="editVisible" width="25%">
                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="用户昵称" prop="name">
                         <el-input v-model="ruleForm.name" style="width: 215px"></el-input>
@@ -94,7 +94,6 @@
     import {getUsers,editEnable,deleteUser} from '../../api/sysApi'
     import location  from '../common/Location'
     import {editUser} from '../../api/sysApi'
-    import user from "../../store/modules/user";
     //初始化表头
     let tableEle = [{
         fixed: 'left',
