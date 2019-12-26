@@ -27,6 +27,7 @@
                 </el-form-item>
                 <el-form-item label="用户地区">
                     <location v-on:getValue="getValue"></location>
+<!--                    <locations></locations>-->
                 </el-form-item>
                 <el-form-item label="活动形式" prop="desc">
                     <el-input type="textarea" v-model="ruleForm.desc"></el-input>
@@ -41,6 +42,7 @@
 </template>
 <script>
     import location  from '../common/Location'
+    import Locations  from '../common/Locations'
     export default {
         name: "userEdit",
         data () {
@@ -77,7 +79,8 @@
             }
         },
         components: {
-            location
+            location,
+            Locations
         }
     }
 </script>

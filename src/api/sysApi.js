@@ -6,6 +6,15 @@ import request from '../utils/request';
  * @date 2019/12/24　11:16
  */
 //获取地区列表
+export const getLocationsList =() => {
+    return request({
+        url: '/sys/locations',
+        method: 'get'
+    })
+};
+
+
+//获取地区列表
 export const getLocations = (id) => {
     return request({
         url: '/sys/location/'+id,
