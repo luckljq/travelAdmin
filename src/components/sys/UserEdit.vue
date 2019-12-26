@@ -29,20 +29,17 @@
                     <location v-on:getValue="getValue"></location>
 <!--                    <locations></locations>-->
                 </el-form-item>
-                <el-form-item label="活动形式" prop="desc">
-                    <el-input type="textarea" v-model="ruleForm.desc"></el-input>
-                </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" >确认修改</el-button>
+                    <el-button type="primary" @click="editUser">确认修改</el-button>
                 </el-form-item>
             </el-form>
-
         </div>
     </div>
 </template>
 <script>
     import location  from '../common/Location'
-    import Locations  from '../common/Locations'
+    // import Locations  from '../common/Locations'
+    import {editUser} from '../../api/sysApi'
     export default {
         name: "userEdit",
         data () {
@@ -52,8 +49,8 @@
                     name: this.$route.params.data.userName,
                     phone: this.$route.params.data.phone,
                     email: this.$route.params.data.email,
-                    sex: '',
-                    desc: ''
+                    sex: this.$route.params.data.sex,
+                    locationCode: null,
                 },
                 rules: {
                     name: [
@@ -66,21 +63,31 @@
                     ],
                     sex: [
                         { required: true, message: '请选择性别', trigger: 'change' }
-                    ],
-                    desc: [
-                        { required: true, message: '请填写活动形式', trigger: 'blur' }
                     ]
                 }
             }
         },
         methods:{
+            //修改用户信息
+            editUser(){
+                editUser({
+                    userId: this.user.userId,
+                    userName: this.ruleForm.name,
+                    phone: this.ruleForm.phone,
+                    email: this.ruleForm.email,
+                    sex: this.ruleForm.sex,
+                    locationCode:this.ruleForm.locationCode
+                }).then(res => {
+                    console.log(res)
+                })
+            },
+            //获取地址
             getValue(locationCode) {
-                console.log(locationCode[2])
+                this.ruleForm.locationCode = locationCode[2];
             }
         },
         components: {
-            location,
-            Locations
+            location
         }
     }
 </script>

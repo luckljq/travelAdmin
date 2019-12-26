@@ -48,6 +48,34 @@
                 </el-table-column>
             </tableCom>
 
+            <!-- 编辑弹出框 -->
+            <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
+                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+                    <el-form-item label="用户昵称" prop="name">
+                        <el-input v-model="ruleForm.name" style="width: 215px"></el-input>
+                    </el-form-item>
+                    <el-form-item label="用户电话" prop="phone">
+                        <el-input v-model="ruleForm.phone" style="width: 215px"></el-input>
+                    </el-form-item>
+                    <el-form-item label="电子邮箱">
+                        <el-input v-model="ruleForm.email" style="width: 215px"></el-input>
+                    </el-form-item>
+                    <el-form-item label="用户性别" prop="sex">
+                        <el-radio-group v-model="ruleForm.sex">
+                            <el-radio label="男"></el-radio>
+                            <el-radio label="女"></el-radio>
+                            <el-radio label="保密"></el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="用户地区">
+                        <location v-on:getValue="getValue"></location>
+                        <!--                    <locations></locations>-->
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="editUser">确认修改</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
             <!-- 删除提示框 -->
             <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
               <div class="del-dialog-cnt">是否确定删除此用户？</div>
@@ -64,6 +92,9 @@
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
     import {getUsers,editEnable,deleteUser} from '../../api/sysApi'
+    import location  from '../common/Location'
+    import {editUser} from '../../api/sysApi'
+    import user from "../../store/modules/user";
     //初始化表头
     let tableEle = [{
         fixed: 'left',
@@ -99,6 +130,7 @@
     export default {
         data() {
             return {
+                editVisible: false,
                 delVisible: false,
                 //表格初始化
                 tableData: [],
@@ -109,7 +141,28 @@
                 //查询条件
                 name: '',
                 phone:'',
-                id:null
+                id:null,
+                //编辑框
+                ruleForm: {
+                    name: '',
+                    phone: '',
+                    email: '',
+                    sex: '',
+                    locationCode: null,
+                },
+                rules: {
+                    name: [
+                        { required: true, message: '请输入用户昵称', trigger: 'blur' },
+                        { min: 2, max: 8, message: '长度在 2 到 8 个字符', trigger: 'blur' }
+                    ],
+                    phone: [
+                        { required: true, message: '请输入用户电话', trigger: 'blur' },
+                        { min: 2, max: 11, message: '长度为 11 个字符', trigger: 'blur' }
+                    ],
+                    sex: [
+                        { required: true, message: '请选择性别', trigger: 'change' }
+                    ]
+                }
             }
         },
         //打开页面初始化
@@ -117,16 +170,47 @@
             this.getData();
         },
         methods: {
-            //跳转到编辑页面
-            handleEdit(row) {
-                this.$router.push({
-                    path:'/user/edit',
-                    name:'userEdit',
-                    params: {
-                        data: row
-                    }
-                });
+            //修改用户信息
+            editUser(){
+                editUser({
+                    userId: this.id,
+                    userName: this.ruleForm.name,
+                    phone: this.ruleForm.phone,
+                    email: this.ruleForm.email,
+                    sex: this.ruleForm.sex,
+                    locationCode:this.ruleForm.locationCode
+                }).then(res => {
+                    this.editVisible = false;
+                    this.getData();
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    })
+                })
             },
+            //获取地址
+            getValue(locationCode) {
+                this.ruleForm.locationCode = locationCode[2];
+            },
+            //修改页面
+            handleEdit(row) {
+                this.id = row.userId;
+                this.ruleForm.name = row.userName;
+                this.ruleForm.phone = row.phone;
+                this.ruleForm.email = row.email;
+                this.ruleForm.sex = row.sex;
+                this.editVisible = true;
+            },
+            // //跳转到编辑页面
+            // handleEdit(row) {
+            //     this.$router.push({
+            //         path:'/user/edit',
+            //         name:'userEdit',
+            //         params: {
+            //             data: row
+            //         }
+            //     });
+            // },
             //删除用户
             deleteRow() {
                 deleteUser(this.id).then(res => {
@@ -184,7 +268,8 @@
             },
         },
         components: {
-            tableCom
+            tableCom,
+            location
         }
     }
 </script>

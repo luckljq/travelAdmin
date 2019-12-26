@@ -5,6 +5,14 @@ import request from '../utils/request';
  * @author ljq
  * @date 2019/12/24　11:16
  */
+export const editUser = (query) => {
+    return request({
+        url: '/sys/user',
+        method: 'put',
+        data: query
+    })
+};
+
 //获取地区列表
 export const getLocationsList =() => {
     return request({
