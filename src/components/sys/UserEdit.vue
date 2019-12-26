@@ -12,11 +12,11 @@
                 <el-form-item label="用户昵称" prop="name">
                     <el-input v-model="ruleForm.name" style="width: 215px"></el-input>
                 </el-form-item>
-                <el-form-item label="活动区域" prop="region">
-                    <el-select v-model="ruleForm.region" placeholder="请选择活动区域">
-                        <el-option label="区域一" value="shanghai"></el-option>
-                        <el-option label="区域二" value="beijing"></el-option>
-                    </el-select>
+                <el-form-item label="用户电话" prop="phone">
+                    <el-input v-model="ruleForm.phone" style="width: 215px"></el-input>
+                </el-form-item>
+                <el-form-item label="电子邮箱">
+                    <el-input v-model="ruleForm.email" style="width: 215px"></el-input>
                 </el-form-item>
                 <el-form-item label="用户性别" prop="sex">
                     <el-radio-group v-model="ruleForm.sex">
@@ -25,6 +25,9 @@
                         <el-radio label="保密"></el-radio>
                     </el-radio-group>
                 </el-form-item>
+                <el-form-item label="用户地区">
+                    <location v-on:getValue="getValue"></location>
+                </el-form-item>
                 <el-form-item label="活动形式" prop="desc">
                     <el-input type="textarea" v-model="ruleForm.desc"></el-input>
                 </el-form-item>
@@ -32,10 +35,12 @@
                     <el-button type="primary" >确认修改</el-button>
                 </el-form-item>
             </el-form>
+
         </div>
     </div>
 </template>
 <script>
+    import location  from '../common/Location'
     export default {
         name: "userEdit",
         data () {
@@ -43,17 +48,19 @@
                 user:this.$route.params.data,
                 ruleForm: {
                     name: this.$route.params.data.userName,
-                    region: '',
+                    phone: this.$route.params.data.phone,
+                    email: this.$route.params.data.email,
                     sex: '',
                     desc: ''
                 },
                 rules: {
                     name: [
-                        { required: true, message: '请输入活动名称', trigger: 'blur' },
-                        { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+                        { required: true, message: '请输入用户昵称', trigger: 'blur' },
+                        { min: 2, max: 8, message: '长度在 2 到 8 个字符', trigger: 'blur' }
                     ],
-                    region: [
-                        { required: true, message: '请选择活动区域', trigger: 'change' }
+                    phone: [
+                        { required: true, message: '请输入用户电话', trigger: 'blur' },
+                        { min: 2, max: 11, message: '长度为 11 个字符', trigger: 'blur' }
                     ],
                     sex: [
                         { required: true, message: '请选择性别', trigger: 'change' }
@@ -65,7 +72,12 @@
             }
         },
         methods:{
-
+            getValue(locationCode) {
+                console.log(locationCode[2])
+            }
+        },
+        components: {
+            location
         }
     }
 </script>
