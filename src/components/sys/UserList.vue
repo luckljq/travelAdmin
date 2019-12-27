@@ -26,9 +26,9 @@
                 <el-table-column slot="btn-operation"
                                  fixed="right"
                                  label="操作"
-                                 width="300px">
+                                 width="250px">
                     <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-info" >查看</el-button>
+<!--                        <el-button type="text" icon="el-icon-info" >查看</el-button>-->
                         <el-button
                                 type="text"
                                 icon="el-icon-edit"
@@ -124,6 +124,11 @@
         fixed: '',
         prop: 'isEnable',
         label: '状态',
+        width: ''
+    }, {
+        fixed: '',
+        prop: 'sysUserRoles[0].roleName',
+        label: '当前角色',
         width: ''
     }];
     export default {
