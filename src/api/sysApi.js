@@ -5,6 +5,24 @@ import request from '../utils/request';
  * @author ljq
  * @date 2019/12/24　11:16
  */
+//分配角色
+export const distributeRole = (query) => {
+    return request({
+        url:'/sys/distributeRole',
+        method:'post',
+        data:query
+    })
+};
+
+//获取用角色列表（简单信息）
+export const getRoleList = () =>{
+    return request({
+        url:'/sys/roles/list',
+        method: 'get'
+    })
+};
+
+//修改用户
 export const editUser = (query) => {
     return request({
         url: '/sys/user',
@@ -20,7 +38,6 @@ export const getLocationsList =() => {
         method: 'get'
     })
 };
-
 
 //获取地区列表
 export const getLocations = (id) => {

@@ -26,9 +26,9 @@
                 <el-table-column slot="btn-operation"
                                  fixed="right"
                                  label="操作"
-                                 width="250px">
+                                 width="300px">
                     <template slot-scope="scope">
-<!--                        <el-button type="text" icon="el-icon-info" >查看</el-button>-->
+                        <el-button type="text" icon="el-icon-info" @click="handleRole(scope.row)">分配角色</el-button>
                         <el-button
                                 type="text"
                                 icon="el-icon-edit"
@@ -48,6 +48,15 @@
                 </el-table-column>
             </tableCom>
 
+            <!-- 角色分配弹出框 -->
+            <el-dialog title="分配角色" :visible.sync="roleVisible" width="25%">
+                <el-checkbox-group v-model="checkList">
+                    <el-checkbox v-for="city in cities" :label="city.roleId" :key="city.roleId">{{city.roleName}}</el-checkbox>
+                </el-checkbox-group>
+                <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="editRoles">确 定</el-button>
+                </span>
+            </el-dialog>
             <!-- 编辑弹出框 -->
             <el-dialog title="编辑用户" :visible.sync="editVisible" width="25%">
                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
@@ -91,7 +100,7 @@
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getUsers,editEnable,deleteUser} from '../../api/sysApi'
+    import {getUsers,editEnable,deleteUser,getRoleList,distributeRole} from '../../api/sysApi'
     import location  from '../common/Location'
     import {editUser} from '../../api/sysApi'
     //初始化表头
@@ -134,6 +143,9 @@
     export default {
         data() {
             return {
+                cities:[],
+                checkList: [],
+                roleVisible: false,
                 editVisible: false,
                 delVisible: false,
                 //表格初始化
@@ -174,6 +186,32 @@
             this.getData();
         },
         methods: {
+            editRoles() {
+                distributeRole({
+                    userId: this.id,
+                    roleIdList: this.checkList
+                }).then(res => {
+                    this.getData();
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    })
+                });
+                this.roleVisible = false;
+            },
+            //打开分配角色框
+            handleRole(row){
+                getRoleList().then(res => {
+                    this.cities = res.data;
+                });
+                this.checkList = [];
+                let roles = row.sysUserRoles;
+                roles.forEach(role => {
+                    this.checkList.push(role.roleId);
+                });
+                this.id = row.userId;
+                this.roleVisible = true;
+            },
             //修改用户信息
             editUser(){
                 editUser({
