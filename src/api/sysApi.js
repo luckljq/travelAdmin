@@ -5,6 +5,16 @@ import request from '../utils/request';
  * @author ljq
  * @date 2019/12/24　11:16
  */
+
+export const addRole =(query) => {
+    return request({
+        url: 'sys/role',
+        method: 'post',
+        data: query
+    })
+};
+
+//获取用户角色列表
 export const getRoles = (query) =>{
   return request({
       url: '/sys/roles',

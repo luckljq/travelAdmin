@@ -81,7 +81,7 @@
                         <!--                    <locations></locations>-->
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="editUser">确认修改</el-button>
+                        <el-button type="primary" @click="editUser('ruleForm')">确认修改</el-button>
                     </el-form-item>
                 </el-form>
             </el-dialog>
@@ -213,22 +213,29 @@
                 this.roleVisible = true;
             },
             //修改用户信息
-            editUser(){
-                editUser({
-                    userId: this.id,
-                    userName: this.ruleForm.name,
-                    phone: this.ruleForm.phone,
-                    email: this.ruleForm.email,
-                    sex: this.ruleForm.sex,
-                    locationCode:this.ruleForm.locationCode
-                }).then(res => {
-                    this.editVisible = false;
-                    this.getData();
-                    Message.success({
-                        message:res.message,
-                        center:true
-                    })
-                })
+            editUser(formName){
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        editUser({
+                            userId: this.id,
+                            userName: this.ruleForm.name,
+                            phone: this.ruleForm.phone,
+                            email: this.ruleForm.email,
+                            sex: this.ruleForm.sex,
+                            locationCode:this.ruleForm.locationCode
+                        }).then(res => {
+                            this.editVisible = false;
+                            this.getData();
+                            Message.success({
+                                message:res.message,
+                                center:true
+                            })
+                        })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
             },
             //获取地址
             getValue(locationCode) {
