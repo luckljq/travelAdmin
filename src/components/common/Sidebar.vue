@@ -79,16 +79,8 @@
                                 title: '用户管理'
                             },
                             {
-                                index: 'markdown',
-                                title: '角色权限管理'
-                            },
-                            {
-                                index: 'editor',
-                                title: '通讯录'
-                            },
-                            {
-                                index: 'form',
-                                title: '意见查看'
+                                index: 'roles',
+                                title: '角色管理'
                             }]
 
                     }
