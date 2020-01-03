@@ -5,6 +5,33 @@ import request from '../utils/request';
  * @author ljq
  * @date 2019/12/24　11:16
  */
+//删除角色
+export const deleteRole = (id) => {
+    return request({
+        url: 'sys/role/' + id,
+        method: 'delete'
+    })
+};
+
+//修改角色
+export const updateRole = (query) => {
+    return request({
+        url: 'sys/role',
+        method: 'put',
+        data: query
+    })
+};
+
+//分配权限
+export const distributePrivilege = (query) => {
+    return request({
+        url:'sys/rolePrivileges',
+        method: 'post',
+        data: query
+    })
+};
+
+//获取权限列表
 export const getPrivileges = () => {
     return request({
         url:'sys/privileges',

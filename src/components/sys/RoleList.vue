@@ -36,8 +36,8 @@
                                  label="基本操作"
                                  width="300px">
                     <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-edit">编辑</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red">删除</el-button>
+                        <el-button type="text" icon="el-icon-edit" @click="editRoleOpen(scope.row)">编辑</el-button>
+                        <el-button type="text" icon="el-icon-delete" class="red" @click="deleteOpen(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </tableCom>
@@ -58,6 +58,7 @@
                 </el-form>
             </el-dialog>
 
+            <!-- 查看权限弹出框 -->
             <el-dialog title="拥有权限" :visible.sync="showPrivilege" width="25%">
                 <div class="container">
                 <el-tree    style="margin: auto"
@@ -72,6 +73,7 @@
                 </span>
             </el-dialog>
 
+            <!-- 分配权限弹出框 -->
             <el-dialog title="分配权限" :visible.sync="changePrivilege" width="25%">
                 <div class="container">
                     <el-tree    ref="tree"
@@ -84,16 +86,42 @@
                     </el-tree>
                 </div>
                 <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="updatePrivilege()">确定</el-button>
+                    <el-button @click="changePrivilege = false">取 消</el-button>
+                    <el-button type="primary" @click="updatePrivilege()">确定</el-button>
                 </span>
             </el-dialog>
+
+            <!-- 编辑弹出框 -->
+            <el-dialog title="编辑角色" :visible.sync="editVisible" width="25%">
+                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+                    <el-form-item label="角色名称" prop="name">
+                        <el-input v-model="ruleForm.name" style="width: 215px"></el-input>
+                    </el-form-item>
+                    <el-form-item label="角色描述" prop="description">
+                        <el-input v-model="ruleForm.description" style="width: 215px"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button @click="editVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="editRole('ruleForm')">确认修改</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+            <!-- 删除提示框 -->
+            <el-dialog title="提示" :visible.sync="deleteVisible" width="300px" center>
+                <div class="del-dialog-cnt">是否确定删除此用户？</div>
+                <span slot="footer" class="dialog-footer">
+                <el-button @click="deleteVisible = false">取 消</el-button>
+                <el-button type="primary" @click="deleteRow">确 定</el-button>
+              </span>
+            </el-dialog>
+
         </div>
     </div>
 </template>
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getRoles, addRole, getPrivileges} from '../../api/sysApi'
+    import {getRoles, addRole, getPrivileges, distributePrivilege, updateRole, deleteRole} from '../../api/sysApi'
     let tableEle = [{
         fixed: 'left',
         prop: 'roleName',
@@ -113,6 +141,21 @@
     export default {
         data() {
             return {
+                ruleForm: {
+                    name: '',
+                    description: '',
+                },
+                rules: {
+                    name: [
+                        { required: true, message: '请输入角色名称', trigger: 'blur' },
+                        { min: 2, max: 8, message: '长度在 2 到 8 个字符', trigger: 'blur' }
+                    ],
+                    description: [
+                        { required: true, message: '请输入角色描述', trigger: 'blur' },
+                        { min: 2, max: 50, message: '长度为 2到50 个字符', trigger: 'blur' }
+                    ]
+                },
+                roleId:null,
                 privilege:[],
                 privileges:[],
                 data: [],
@@ -120,9 +163,11 @@
                     children: 'children',
                     label: 'label'
                 },
+                editVisible:false,
                 changePrivilege:false,
                 showPrivilege:false,
                 addVisible:false,
+                deleteVisible:false,
                 //表格初始化
                 tableData: [],
                 tableEle,
@@ -187,15 +232,71 @@
             });
         },
         methods: {
+            //删除
+            deleteRow() {
+                deleteRole(this.roleId).then(res => {
+                    this.getData();
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    });
+                    this.deleteVisible = false
+                })
+            },
+            //打开删除弹窗
+            deleteOpen(row) {
+                this.deleteVisible= true;
+                this.roleId = row.roleId;
+            },
+            //打开编辑弹窗
+            editRoleOpen(row) {
+                this.editVisible = true;
+                this.roleId = row.roleId;
+                this.ruleForm.name = row.roleName;
+                this.ruleForm.description = row.description;
+            },
+            //编辑角色
+            editRole(formName){
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        updateRole({
+                            roleId:this.roleId,
+                            roleName:this.ruleForm.name,
+                            description:this.ruleForm.description
+                        }).then(res => {
+                            this.getData();
+                            Message.success({
+                                message:res.message,
+                                center:true
+                            });
+                            this.editVisible = false
+                        })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
             //修改权限
             updatePrivilege() {
                 console.log(this.$refs.tree.getCheckedKeys(true));
+                distributePrivilege({
+                    roleId:this.roleId,
+                    privilegeIdList:this.$refs.tree.getCheckedKeys(true)
+                }).then(res => {
+                    this.getData();
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    });
+                    this.changePrivilege = false
+                })
             },
             changePrivileges(row) {
+                this.roleId = row.roleId;
                 //遍历组装树形图选择数据
                 this.changePrivilege = true;
                 this.privilege = [];
-                console.log(this.privilege);
                 row.privileges.forEach(privilege => {
                     this.privilege.push(privilege.privilegeId)
                 });
