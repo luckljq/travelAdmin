@@ -5,7 +5,14 @@ import request from '../utils/request';
  * @author ljq
  * @date 2019/12/24　11:16
  */
+export const getPrivileges = () => {
+    return request({
+        url:'sys/privileges',
+        method:'get'
+    })
+};
 
+//增加角色
 export const addRole =(query) => {
     return request({
         url: 'sys/role',

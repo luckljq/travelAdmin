@@ -28,7 +28,7 @@
                                  width="300px">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-info" @click="showPrivileges(scope.row)">查看权限</el-button>
-                        <el-button type="text" icon="el-icon-edit">分配权限</el-button>
+                        <el-button type="text" icon="el-icon-edit" @click="changePrivileges(scope.row)">分配权限</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column slot="btn-operation"
@@ -63,12 +63,28 @@
                 <el-tree    style="margin: auto"
                             :data="data"
                             node-key="id"
-                            :default-expanded-keys="[-1, -2, -3]"
+                            :default-expand-all = "true"
                             :props="defaultProps">
                 </el-tree>
                 </div>
                 <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="showPrivilege = false">确定</el-button>
+                </span>
+            </el-dialog>
+
+            <el-dialog title="分配权限" :visible.sync="changePrivilege" width="25%">
+                <div class="container">
+                    <el-tree    ref="tree"
+                                style="margin: auto"
+                                show-checkbox
+                                :data="privileges"
+                                node-key="id"
+                                :default-expand-all="true"
+                                :props="defaultProps">
+                    </el-tree>
+                </div>
+                <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="updatePrivilege()">确定</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -77,7 +93,7 @@
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getRoles, addRole} from '../../api/sysApi'
+    import {getRoles, addRole, getPrivileges} from '../../api/sysApi'
     let tableEle = [{
         fixed: 'left',
         prop: 'roleName',
@@ -97,11 +113,14 @@
     export default {
         data() {
             return {
+                privilege:[],
+                privileges:[],
                 data: [],
                 defaultProps: {
                     children: 'children',
                     label: 'label'
                 },
+                changePrivilege:false,
                 showPrivilege:false,
                 addVisible:false,
                 //表格初始化
@@ -129,12 +148,67 @@
         },
         created() {
             this.getData();
+            //获取所有权限形成树形图
+            getPrivileges().then(res => {
+                let i = -1;
+                let privileges = res.data;
+                privileges.forEach(privilege => {
+                    let flag = false;
+                    if (this.privileges.length == 0){
+                        this.privileges.push({
+                            id:i,
+                            label:privilege.groupName,
+                            children:[]
+                        });
+                        i = i-1;
+                    }
+                    this.privileges.forEach(d => {
+                        if (d.label == privilege.groupName) {
+                            let a = {
+                                id: privilege.privilegeId,
+                                label:  privilege.privilegeName
+                            };
+                            d.children.push(a);
+                            flag = true;
+                        }
+                    });
+                    if (flag == false) {
+                        this.privileges.push({
+                            id:i,
+                            label:privilege.groupName,
+                            children:[{
+                                id: privilege.privilegeId,
+                                label:  privilege.privilegeName
+                            }]
+                        });
+                        i = i-1;
+                    }
+                });
+            });
         },
         methods: {
-            showPrivileges(row) {
+            //修改权限
+            updatePrivilege() {
+                console.log(this.$refs.tree.getCheckedKeys(true));
+            },
+            changePrivileges(row) {
+                //遍历组装树形图选择数据
+                this.changePrivilege = true;
+                this.privilege = [];
+                console.log(this.privilege);
+                row.privileges.forEach(privilege => {
+                    this.privilege.push(privilege.privilegeId)
+                });
+                this.$nextTick(() => {
+                    this.$refs.tree.setCheckedKeys(this.privilege);
+                });
+            },
+            //展示拥有权限
+            showPrivileges(row){
                 this.data = [];
                 let i = -1;
                 let privileges = row.privileges;
+                //遍历组装树形图数据
                 privileges.forEach(privilege => {
                     let flag = false;
                     if (this.data.length == 0){
@@ -169,25 +243,7 @@
                 });
                 this.showPrivilege = true;
             },
-            // showPrivileges(row) {
-            //     let flag = false;
-            //     let privileges = row.privileges;
-            //     this.data.forEach(d => {
-            //         d.children = [];
-            //     });
-            //     privileges.forEach(privilege => {
-            //         this.data.forEach(d => {
-            //             if (d.label == privilege.groupName) {
-            //                 let a = {
-            //                     id: privilege.privilegeId,
-            //                     label:  privilege.privilegeName
-            //                 };
-            //                 d.children.push(a);
-            //             }
-            //         })
-            //     });
-            //     this.showPrivilege = true;
-            // },
+            //新增角色
             add(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -208,6 +264,7 @@
                     }
                 });
             },
+            //获取角色数据
             getData(){
                 getRoles({
                     name: this.name,
