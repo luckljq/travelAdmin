@@ -56,13 +56,15 @@
             login(formName) {
                 login({
                     username: this.ruleForm.username,
-                    password: this.ruleForm.password
+                    password: this.ruleForm.password,
+                    type:1
                 }).then(response => {
                     // console.log(response.data);
                     if (response.data !== null) {
                         this.items = response.data;
                         sessionStorage.setItem('state','已登陆');
                         sessionStorage.setItem('token',this.items.token);
+                        sessionStorage.setItem('privileges',JSON.stringify(this.items.user.privileges));
                         this.$store.dispatch('asyncUpdateUser', {username:this.items.user.userName,token:this.items.token});
                         sessionStorage.setItem('UserState', JSON.stringify(this.$store.state.user));
                         this.$router.push('/dashboard');

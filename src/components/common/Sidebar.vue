@@ -42,48 +42,54 @@
                         icon: 'el-icon-lx-home',
                         index: 'dashboard',
                         title: '系统首页'
-                    },
-                    {
-                        icon: 'el-icon-lx-cascades',
-                        index: '1',
-                        title: '景点管理',
-                        subs: [
-                            {
-                                index: 'slides',
-                                title: '轮播管理'
-                            },
-                            {
-                                index: 'charts',
-                                title: '通知公告'
-                            }]
-
-                    },
-                    {
-                        icon: 'el-icon-lx-calendar',
-                        index: '2',
-                        title: '日志管理',
-                        subs: [
-                            {
-                                index: 'tabs',
-                                title: '登陆日志'
-                            }]
-
-                    },
-                    {
-                        icon: 'el-icon-lx-settings',
-                        index: '3',
-                        title: '系统管理',
-                        subs: [
-                            {
-                                index: 'users',
-                                title: '用户管理'
-                            },
-                            {
-                                index: 'roles',
-                                title: '角色管理'
-                            }]
-
                     }
+                    // },
+                    // {
+                    //     icon: 'el-icon-lx-cascades',
+                    //     index: '1',
+                    //     title: '景点管理',
+                    //     subs: [
+                    //         // {
+                    //         //     index: 'spots',
+                    //         //     title: '景区管理'
+                    //         // },
+                    //         // {
+                    //         //     index: 'charts',
+                    //         //     title: '攻略管理'
+                    //         // },
+                    //         // {
+                    //         //     index: '',
+                    //         //     title: '路线管理'
+                    //         // }
+                    //         ]
+                    //
+                    // },
+                    // {
+                    //     icon: 'el-icon-lx-calendar',
+                    //     index: '2',
+                    //     title: '功能管理',
+                    //     subs: [
+                    //         {
+                    //             index: 'tabs',
+                    //             title: '登陆日志'
+                    //         }]
+                    //
+                    // },
+                    // {
+                    //     icon: 'el-icon-lx-settings',
+                    //     index: '3',
+                    //     title: '系统管理',
+                    //     subs: [
+                    //         // {
+                    //         //     index: 'users',
+                    //         //     title: '用户管理'
+                    //         // },
+                    //         // {
+                    //         //     index: 'roles',
+                    //         //     title: '角色管理'
+                    //         // }
+                    //     ]
+                    // }
                 ]
             }
         },
@@ -93,6 +99,46 @@
             }
         },
         created(){
+            let privileges = JSON.parse(window.sessionStorage.getItem('privileges'));
+            console.log(privileges);
+            privileges.forEach(privilege => {
+                let flag = false;
+                this.items.forEach(i => {
+                    if (privilege.groupName == i.title){
+                        flag = true;
+                    }
+                });
+                if (flag == false) {
+                    let icon = 'el-icon-lx-cascades';
+                    switch (privilege.groupName) {
+                        case "景点管理":
+                            icon = 'el-icon-lx-cascades';
+                            break;
+                        case "内容管理":
+                            icon = 'el-icon-lx-calendar';
+                            break;
+                        case "系统管理":
+                            icon = 'el-icon-lx-settings';
+                            break;
+                    }
+                    this.items.push({
+                        icon: icon,
+                        index: privilege.privilegeCode,
+                        title: privilege.groupName,
+                        subs:[]
+                    });
+                }
+            });
+            this.items.forEach(i => {
+                privileges.forEach(privilege => {
+                    if (privilege.groupName == i.title) {
+                        i.subs.push({
+                            index: privilege.page,
+                            title: privilege.privilegeName
+                        });
+                    }
+                });
+            });
             // 通过 Event Bus 进行组件间通信，来折叠侧边栏
             bus.$on('collapse', msg => {
                 this.collapse = msg;
