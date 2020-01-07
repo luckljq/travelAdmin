@@ -120,6 +120,7 @@
     export default {
         data() {
             return {
+                id:null,
                 show:false,
                 spot:{
                 },
@@ -137,11 +138,35 @@
         },
         methods: {
             editSpot(){
-
+                let type = 1;
+                if (this.spot.scenicSpotType == '景点'){
+                    type = 2
+                }
+                editSpot({
+                    scenicSpotId: this.id,
+                    scenicSpotName: this.spot.scenicSpotName,
+                    scenicSpotType: type,
+                    recommendTotal: this.spot.recommendTotal,
+                    description: this.spot.description,
+                    scenicSpotPhone: this.spot.scenicSpotPhone,
+                    scenicSpotUrl: this.spot.scenicSpotUrl,
+                    useTime: this.spot.useTime,
+                    traffic: this.spot.traffic,
+                    admissionTicket: this.spot.admissionTicket,
+                    openTime: this.spot.openTime
+                }).then(res => {
+                    this.getData();
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    });
+                    this.show = false;
+                })
             },
             showSpot(row) {
                 this.spot = row;
                 this.show = true;
+                this.id = row.scenicSpotId;
             },
             getData() {
                 getSpots({
