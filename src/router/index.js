@@ -21,6 +21,12 @@ export default new Router({
                     component: resolve => require(['../components/sev/SpotList.vue'], resolve),
                     meta: { title: '景区列表' }
                 },
+                {
+                    path: '/spots/detail',
+                    name:'spotDetail',
+                    component: resolve => require(['../components/sev/SpotDetail.vue'], resolve),
+                    meta: { title: '景区详情' }
+                },
                 //系统管理start
                 {
                     path: '/users',

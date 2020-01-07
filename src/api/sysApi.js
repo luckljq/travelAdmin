@@ -8,7 +8,7 @@ import request from '../utils/request';
 //删除角色
 export const deleteRole = (id) => {
     return request({
-        url: 'sys/role/' + id,
+        url: '/sys/role/' + id,
         method: 'delete'
     })
 };
@@ -16,7 +16,7 @@ export const deleteRole = (id) => {
 //修改角色
 export const updateRole = (query) => {
     return request({
-        url: 'sys/role',
+        url: '/sys/role',
         method: 'put',
         data: query
     })
@@ -25,7 +25,7 @@ export const updateRole = (query) => {
 //分配权限
 export const distributePrivilege = (query) => {
     return request({
-        url:'sys/rolePrivileges',
+        url:'/sys/rolePrivileges',
         method: 'post',
         data: query
     })
@@ -34,7 +34,7 @@ export const distributePrivilege = (query) => {
 //获取权限列表
 export const getPrivileges = () => {
     return request({
-        url:'sys/privileges',
+        url:'/sys/privileges',
         method:'get'
     })
 };
@@ -42,7 +42,7 @@ export const getPrivileges = () => {
 //增加角色
 export const addRole =(query) => {
     return request({
-        url: 'sys/role',
+        url: '/sys/role',
         method: 'post',
         data: query
     })
