@@ -11,7 +11,8 @@
             <div class="handle-box">
                 <el-input v-model="name" placeholder="景区名模糊查询" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
-                <el-button type="primary" icon="el-icon-circle-plus" class="handle-del mr10" @click="addVisible = true">增加</el-button>
+                <el-button type="primary" icon="el-icon-circle-plus" class="handle-del mr10"
+                           @click="openAdd">增加</el-button>
             </div>
 
             <tableCom :tableData="tableData" :rowNum="this.rowNum" :tableEle="tableEle" :total="this.total"
@@ -90,12 +91,55 @@
             </el-form>
         </div>
         </div>
+
+        <!-- 新增弹出框 -->
+        <el-dialog title="新增景点" :visible.sync="addVisible" width="25%">
+            <el-form :model="form" ref="form" label-width="100px" class="demo-ruleForm">
+                <el-form-item label="景点名字">
+                    <el-input v-model="form.scenicSpotName"  style="width: 300px"></el-input>
+                </el-form-item>
+                <el-form-item label="景点类型">
+                    <el-radio-group v-model="form.scenicSpotType">
+                        <el-radio label="1">城市</el-radio>
+                        <el-radio label="2">景点</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="景点关键字">
+                    <el-input v-model="form.keyWord"  style="width: 300px"></el-input>
+                </el-form-item>
+                <el-form-item label="景点电话">
+                    <el-input v-model="form.scenicSpotPhone"  style="width: 300px"></el-input>
+                </el-form-item>
+                <el-form-item label="景点网址">
+                    <el-input v-model="form.scenicSpotUrl"  style="width: 300px"></el-input>
+                </el-form-item>
+                <el-form-item label="参考用时">
+                    <el-input v-model="form.useTime"  style="width: 300px"></el-input>
+                </el-form-item>
+                <el-form-item label="交通">
+                    <el-input v-model="form.traffic"  style="width: 300px"></el-input>
+                </el-form-item>
+                <el-form-item label="门票">
+                    <el-input v-model="form.admissionTicket"  style="width: 300px"></el-input>
+                </el-form-item>
+                <el-form-item label="开放时间">
+                    <el-input v-model="form.openTime"  style="width: 300px"></el-input>
+                </el-form-item>
+                <el-form-item label="景点描述">
+                    <el-input type="textarea" v-model="form.description"  style="width: 300px"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="editVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="addSpot">确认修改</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots, editSpot} from '../../api/sevApi'
+    import {getSpots, editSpot, insertSpot} from '../../api/sevApi'
     let tableEle = [{
         fixed: 'left',
         prop: 'scenicSpotName',
@@ -120,6 +164,9 @@
     export default {
         data() {
             return {
+                form:{
+                },
+                addVisible:false,
                 id:null,
                 show:false,
                 spot:{
@@ -137,6 +184,32 @@
             this.getData();
         },
         methods: {
+            addSpot(){
+                console.log(this.form);
+                insertSpot({
+                    scenicSpotName: this.form.scenicSpotName,
+                    keyWord: this.form.keyWord,
+                    scenicSpotType: this.form.scenicSpotType,
+                    description: this.form.description,
+                    scenicSpotPhone: this.form.scenicSpotPhone,
+                    scenicSpotUrl: this.form.scenicSpotUrl,
+                    useTime: this.form.useTime,
+                    traffic: this.form.traffic,
+                    admissionTicket: this.form.admissionTicket,
+                    openTime: this.form.openTime,
+                }).then(res => {
+                    this.getData();
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    });
+                    this.addVisible = false;
+                });
+            },
+            openAdd(){
+                this.from = {};
+                this.addVisible = true;
+            },
             editSpot(){
                 let type = 1;
                 if (this.spot.scenicSpotType == '景点'){

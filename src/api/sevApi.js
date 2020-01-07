@@ -1,11 +1,18 @@
 import request from '../utils/request';
-
 /**
  * description：景区api
  *
  * @author ljq
  * @date 2020/1/7　9:09
  */
+//新增景区
+export const insertSpot = (query) =>{
+    return request({
+        url:'/sev/spot',
+        method: 'post',
+        data: query
+    })
+};
 //修改景区信息
 export const editSpot = (query) =>{
     return request({

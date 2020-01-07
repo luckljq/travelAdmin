@@ -100,7 +100,6 @@
         },
         created(){
             let privileges = JSON.parse(window.sessionStorage.getItem('privileges'));
-            console.log(privileges);
             privileges.forEach(privilege => {
                 let flag = false;
                 this.items.forEach(i => {
