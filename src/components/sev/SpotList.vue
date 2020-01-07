@@ -23,8 +23,8 @@
                                  width="300px">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="showSpot(scope.row)">查看/编辑</el-button>
-                        <el-button type="text" icon="el-icon-edit" >启用</el-button>
-                        <el-button type="text" icon="el-icon-edit" >禁用</el-button>
+                        <el-button type="text" icon="el-icon-edit" @click="enableSpots(scope.row, 1)">启用</el-button>
+                        <el-button type="text" icon="el-icon-edit" @click="enableSpots(scope.row, 0)">禁用</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" >删除</el-button>
                     </template>
                 </el-table-column>
@@ -139,7 +139,7 @@
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots, editSpot, insertSpot} from '../../api/sevApi'
+    import {getSpots, editSpot, insertSpot, enableSpot} from '../../api/sevApi'
     let tableEle = [{
         fixed: 'left',
         prop: 'scenicSpotName',
@@ -184,8 +184,18 @@
             this.getData();
         },
         methods: {
+            //启用禁用
+            enableSpots(row, enable){
+                enableSpot(row.scenicSpotId,enable).then(res => {
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    });
+                    this.getData();
+                })
+            },
+            //新增
             addSpot(){
-                console.log(this.form);
                 insertSpot({
                     scenicSpotName: this.form.scenicSpotName,
                     keyWord: this.form.keyWord,
@@ -206,10 +216,12 @@
                     this.addVisible = false;
                 });
             },
+            //打开新增弹出框
             openAdd(){
                 this.from = {};
                 this.addVisible = true;
             },
+            //修改景点
             editSpot(){
                 let type = 1;
                 if (this.spot.scenicSpotType == '景点'){
@@ -236,6 +248,7 @@
                     this.show = false;
                 })
             },
+            //打开详情
             showSpot(row) {
                 this.spot = row;
                 this.show = true;
