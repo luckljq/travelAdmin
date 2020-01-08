@@ -22,10 +22,9 @@ export default new Router({
                     meta: { title: '景区列表' }
                 },
                 {
-                    path: '/spots/add',
-                    name:'addSpot',
-                    component: resolve => require(['../components/sev/AddSpot.vue'], resolve),
-                    meta: { title: '景区详情' }
+                    path: '/images',
+                    component: resolve => require(['../components/sev/SpotImageList.vue'], resolve),
+                    meta: { title: '图片管理' }
                 },
                 //系统管理start
                 {

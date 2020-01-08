@@ -90,6 +90,18 @@
                 </div>
             </el-form>
         </div>
+            <div class="crumbs">
+                <el-breadcrumb separator="/">
+                    <el-breadcrumb-item>
+                    </el-breadcrumb-item>
+                </el-breadcrumb>
+            </div>
+            <div class="crumbs">
+                <el-breadcrumb separator="/">
+                    <el-breadcrumb-item>
+                    </el-breadcrumb-item>
+                </el-breadcrumb>
+            </div>
         </div>
 
         <!-- 新增弹出框 -->
