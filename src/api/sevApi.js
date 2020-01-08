@@ -5,14 +5,19 @@ import request from '../utils/request';
  * @author ljq
  * @date 2020/1/7　9:09
  */
-
+export const deleteSpot = (id) =>{
+    return request({
+        url:'/sev/spot/' + id,
+        method: 'delete'
+    })
+};
 //启用、禁用
 export const enableSpot = (id, enable) =>{
     return request({
         url:'/sev/spot/' + id +'/' + enable,
         method:'patch'
     })
-}  ;
+};
 //新增景区
 export const insertSpot = (query) =>{
     return request({

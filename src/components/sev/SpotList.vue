@@ -25,7 +25,7 @@
                         <el-button type="text" icon="el-icon-edit" @click="showSpot(scope.row)">查看/编辑</el-button>
                         <el-button type="text" icon="el-icon-edit" @click="enableSpots(scope.row, 1)">启用</el-button>
                         <el-button type="text" icon="el-icon-edit" @click="enableSpots(scope.row, 0)">禁用</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red" >删除</el-button>
+                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.row)" >删除</el-button>
                     </template>
                 </el-table-column>
             </tableCom>
@@ -134,12 +134,21 @@
                 </el-form-item>
             </el-form>
         </el-dialog>
+
+        <!-- 删除提示框 -->
+        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+            <div class="del-dialog-cnt">是否确定删除此景点？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="delVisible = false">取 消</el-button>
+                <el-button type="primary" @click="deleteRow">确 定</el-button>
+              </span>
+        </el-dialog>
     </div>
 </template>
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots, editSpot, insertSpot, enableSpot} from '../../api/sevApi'
+    import {getSpots, editSpot, insertSpot, enableSpot, deleteSpot} from '../../api/sevApi'
     let tableEle = [{
         fixed: 'left',
         prop: 'scenicSpotName',
@@ -166,6 +175,7 @@
             return {
                 form:{
                 },
+                delVisible:false,
                 addVisible:false,
                 id:null,
                 show:false,
@@ -184,6 +194,22 @@
             this.getData();
         },
         methods: {
+            //打开删除弹窗
+            handleDelete(row){
+                this.id = row.scenicSpotId;
+                this.delVisible = true;
+            },
+            //删除
+            deleteRow(){
+                deleteSpot(this.id).then(res => {
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    });
+                    this.delVisible = false;
+                    this.getData();
+                })
+            },
             //启用禁用
             enableSpots(row, enable){
                 enableSpot(row.scenicSpotId,enable).then(res => {
