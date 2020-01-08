@@ -44,8 +44,7 @@
                           v-on:getPageNumber="getPageNumber2">
                     <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
                         <template slot-scope="scope">
-                            <el-button type="text" icon="el-icon-info" @click="showImage(scope.row)" >查看图片</el-button>
-                            <el-button type="text" icon="el-icon-info" >新增图片</el-button>
+                            <el-button type="text" icon="el-icon-info" >图片预览</el-button>
                             <el-button type="text" icon="el-icon-delete" class="red">删除图片</el-button>
                         </template>
                     </el-table-column>
@@ -70,7 +69,7 @@
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots} from '../../api/sevApi'
+    import {getSpots, getSpotImages} from '../../api/sevApi'
 
     let tableEle =  [{
         fixed: 'left',
@@ -94,7 +93,20 @@
         width: ''
     }];
     let tableEle2 =  [{
-
+        fixed: 'left',
+        prop: 'scenicSpotId',
+        label: '景区名',
+        width: ''
+    },{
+        fixed: '',
+        prop: 'imageUrl',
+        label: '图片链接',
+        width: ''
+    },{
+        fixed: '',
+        prop: 'createTime',
+        label: '创建时间',
+        width: ''
     }];
     export default {
         data () {
@@ -121,7 +133,15 @@
             this.getData();
         },
         methods:{
-            showImage() {
+            showImage(row) {
+                getSpotImages(row.scenicSpotId).then(res => {
+                    let list = res.data.list;
+                    list.forEach( list=>{
+
+                    });
+                    this.tableData2 = res.data.list;
+                    this.total2 = res.data.total;
+                });
                 this.show = true;
             },
 
