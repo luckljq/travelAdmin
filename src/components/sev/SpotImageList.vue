@@ -44,8 +44,8 @@
                           v-on:getPageNumber="getPageNumber2">
                     <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
                         <template slot-scope="scope">
-                            <el-button type="text" icon="el-icon-info" >图片预览</el-button>
-                            <el-button type="text" icon="el-icon-delete" class="red">删除图片</el-button>
+                            <el-button type="text" icon="el-icon-info" @click="openImage(scope.row)">图片预览</el-button>
+                            <el-button type="text" icon="el-icon-delete" class="red" @click="openDelete(scope.row)">删除图片</el-button>
                         </template>
                     </el-table-column>
                 </tableCom>
@@ -64,12 +64,31 @@
                 </el-breadcrumb>
             </div>
         </div>
+
+        <!-- 图片预览框 -->
+        <el-dialog title="图片预览" :visible.sync="imageVisible"  center>
+            <div style="text-align: center">
+            <el-image
+                    style="width: 500px; height: 500px"
+                    :src="url"
+                    :fit="fit"></el-image>
+            </div>
+        </el-dialog>
+
+        <!-- 删除提示框 -->
+        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+            <div class="del-dialog-cnt">是否确定删除此图片？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="delVisible = false">取 消</el-button>
+                <el-button type="primary" @click="deleteImage">确 定</el-button>
+              </span>
+        </el-dialog>
     </div>
 </template>
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots, getSpotImages} from '../../api/sevApi'
+    import {getSpots, getSpotImages, deleteSpotImage} from '../../api/sevApi'
 
     let tableEle =  [{
         fixed: 'left',
@@ -101,7 +120,7 @@
         fixed: '',
         prop: 'imageUrl',
         label: '图片链接',
-        width: ''
+        width: '500px'
     },{
         fixed: '',
         prop: 'createTime',
@@ -111,6 +130,9 @@
     export default {
         data () {
             return{
+                url:'',
+                imageVisible:false,
+                delVisible:false,
                 show:false,
                 //表格初始化
                 tableData: [],
@@ -127,19 +149,49 @@
                 //查询条件
                 name: '',
                 id:null,
+                spotName:'',
+                imageId:null,
             }
         },
         created() {
             this.getData();
         },
         methods:{
+            openImage(row) {
+              this.url = row.imageUrl;
+              console.log(this.url);
+              this.imageVisible = true;
+            },
+            openDelete(row) {
+                this.imageId = row.id;
+                this.delVisible = true;
+            },
+            deleteImage() {
+                deleteSpotImage(this.imageId).then(res=>{
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    });
+                    this.delVisible = false;
+                    getSpotImages(this.id).then(res => {
+                        let list = res.data.list;
+                        list.forEach( list=>{
+                            list.scenicSpotId = this.spotName;
+                        });
+                        this.tableData2 = list;
+                        this.total2 = res.data.total;
+                    })
+                });
+            },
             showImage(row) {
-                getSpotImages(row.scenicSpotId).then(res => {
+                this.id = row.scenicSpotId;
+                this.spotName = row.scenicSpotName;
+                getSpotImages(this.id).then(res => {
                     let list = res.data.list;
                     list.forEach( list=>{
-
+                        list.scenicSpotId = this.spotName;
                     });
-                    this.tableData2 = res.data.list;
+                    this.tableData2 = list;
                     this.total2 = res.data.total;
                 });
                 this.show = true;

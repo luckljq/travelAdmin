@@ -5,6 +5,13 @@ import request from '../utils/request';
  * @author ljq
  * @date 2020/1/7　9:09
  */
+//删除图片
+export const deleteSpotImage = (id) => {
+    return request({
+        url:'sev/spot/image/' + id,
+        method: 'delete'
+    })
+};
 //获取景区列表
 export const getSpotImages = (id) => {
     return request({
