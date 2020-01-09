@@ -24,8 +24,7 @@
                 <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-info" @click="showImage(scope.row)" >查看图片</el-button>
-                        <el-button type="text" icon="el-icon-info" >新增图片</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red">删除图片</el-button>
+                        <el-button type="text" icon="el-icon-info" @click="openAddImage(scope.row)" >新增图片</el-button>
                     </template>
                 </el-table-column>
             </tableCom>
@@ -65,13 +64,44 @@
             </div>
         </div>
 
+        <!-- 上传图片弹出框 -->
+        <el-dialog title="图片上传" :visible.sync="addImageVisible" :before-close="beforeClose" width="30%"  center>
+<!--            <el-upload-->
+<!--                    action="http://localhost:8888/sev/spot/image"-->
+<!--                    :show-file-list="false"-->
+<!--                    :headers="{Authorization:token}"-->
+<!--                    :data="uploadData"-->
+<!--            >-->
+<!--                <el-button type="primary" size="medium">上传图片</el-button>-->
+<!--            </el-upload>-->
+            <div class="my">
+                <el-upload
+                        action="http://localhost:8888/sev/spot/image"
+                        list-type="picture-card"
+                        :headers="{Authorization:token}"
+                        :data="uploadData"
+                        :on-preview="handlePictureCardPreview"
+                        :file-list="fileList"
+                        :on-success="onSuccess"
+                        :on-remove="handleRemove"
+                        >
+                    <i class="el-icon-plus"></i>
+                </el-upload>
+                <el-dialog :visible.sync="dialogVisible" :modal="false">
+                    <img width="100%" :src="dialogImageUrl" alt="">
+                </el-dialog>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="beforeClose">确 定</el-button>
+            </span>
+        </el-dialog>
+
         <!-- 图片预览框 -->
         <el-dialog title="图片预览" :visible.sync="imageVisible"  center>
             <div style="text-align: center">
             <el-image
-                    style="width: 500px; height: 500px"
                     :src="url"
-                    :fit="fit"></el-image>
+                    ></el-image>
             </div>
         </el-dialog>
 
@@ -130,7 +160,15 @@
     export default {
         data () {
             return{
+                fileList:[],
+                dialogImageUrl: '',
+                dialogVisible:false,
+                token: "Bearer " + JSON.parse(window.sessionStorage.getItem('UserState')).user.token,
+                uploadData:{
+                    id:null,
+                },
                 url:'',
+                addImageVisible:false,
                 imageVisible:false,
                 delVisible:false,
                 show:false,
@@ -157,15 +195,50 @@
             this.getData();
         },
         methods:{
+            handleRemove(res) {
+                this.imageId = res.response.data;
+                this.deleteImage();
+            },
+            onSuccess(res) {
+                Message.success({
+                    message:res.message,
+                    center:true
+                });
+                this.show = true;
+                this.getImages();
+            },
+            //上传图片预览
+            handlePictureCardPreview(file) {
+                this.dialogImageUrl = file.url;
+                this.dialogVisible = true;
+            },
+
+            //关闭上传图片弹窗
+            beforeClose(){
+                this.fileList = [];
+                this.addImageVisible = false;
+            },
+            //打开上传图片弹窗
+            openAddImage(row) {
+                this.id = row.scenicSpotId;
+                this.spotName = row.scenicSpotName;
+                this.uploadData.id = row.scenicSpotId;
+                this.addImageVisible = true;
+            },
+
+            //图片预览弹框
             openImage(row) {
               this.url = row.imageUrl;
-              console.log(this.url);
               this.imageVisible = true;
             },
+
+            //删除弹框
             openDelete(row) {
                 this.imageId = row.id;
                 this.delVisible = true;
             },
+
+            //删除图片
             deleteImage() {
                 deleteSpotImage(this.imageId).then(res=>{
                     Message.success({
@@ -173,20 +246,31 @@
                         center:true
                     });
                     this.delVisible = false;
-                    getSpotImages(this.id).then(res => {
-                        let list = res.data.list;
-                        list.forEach( list=>{
-                            list.scenicSpotId = this.spotName;
-                        });
-                        this.tableData2 = list;
-                        this.total2 = res.data.total;
-                    })
+                    this.getImages();
                 });
             },
+            //获取图片列表2
+            getImages() {
+                getSpotImages(this.id, {
+                    pageNumber:this.pageNumber2,
+                    pageSize: this.rowNum2
+                }).then(res => {
+                    let list = res.data.list;
+                    list.forEach( list=>{
+                        list.scenicSpotId = this.spotName;
+                    });
+                    this.tableData2 = list;
+                    this.total2 = res.data.total;
+                })
+            },
+            //获取图片列表
             showImage(row) {
                 this.id = row.scenicSpotId;
                 this.spotName = row.scenicSpotName;
-                getSpotImages(this.id).then(res => {
+                getSpotImages(this.id, {
+                    pageNumber:this.pageNumber2,
+                    pageSize: this.rowNum2
+                }).then(res => {
                     let list = res.data.list;
                     list.forEach( list=>{
                         list.scenicSpotId = this.spotName;
@@ -227,8 +311,9 @@
             },
             //翻页
             getPageNumber2(pageNumber) {
+                console.log(pageNumber);
                 this.pageNumber2 = pageNumber;
-                this.getData()
+                this.getImages();
             }
         },
         components: {
@@ -237,6 +322,12 @@
     }
 </script>
 <style scoped>
+
+    .my {
+        text-align: center;
+        margin: auto 0;
+    }
+
     .handle-box {
         margin-bottom: 20px;
     }

@@ -13,10 +13,11 @@ export const deleteSpotImage = (id) => {
     })
 };
 //获取景区列表
-export const getSpotImages = (id) => {
+export const getSpotImages = (id, query) => {
     return request({
         url:'/sev/spot/images/' + id,
-        method: 'get'
+        method: 'get',
+        params: query
     })
 };
 
