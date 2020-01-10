@@ -26,6 +26,11 @@ export default new Router({
                     component: resolve => require(['../components/sev/SpotImageList.vue'], resolve),
                     meta: { title: '图片管理' }
                 },
+                {
+                    path: '/strategy',
+                    component: resolve => require(['../components/sev/StrategyManage.vue'], resolve),
+                    meta: { title: '攻略管理' }
+                },
                 //系统管理start
                 {
                     path: '/users',

@@ -3,7 +3,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 景区管理
+                    <i class="el-icon-lx-cascades"></i> 景区列表
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>

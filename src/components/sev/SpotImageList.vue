@@ -9,7 +9,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 图片管理
+                    <i class="el-icon-lx-cascades"></i> 景区列表
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
@@ -24,7 +24,8 @@
                 <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-info" @click="showImage(scope.row)" >查看图片</el-button>
-                        <el-button type="text" icon="el-icon-info" @click="openAddImage(scope.row)" >新增图片</el-button>
+                        <el-button type="text" icon="el-icon-upload" @click="openAddImage(scope.row)">
+                            图片上传</el-button>
                     </template>
                 </el-table-column>
             </tableCom>
@@ -309,7 +310,7 @@
                 this.pageNumber = pageNumber;
                 this.getData()
             },
-            //翻页
+            //翻页2
             getPageNumber2(pageNumber) {
                 console.log(pageNumber);
                 this.pageNumber2 = pageNumber;
