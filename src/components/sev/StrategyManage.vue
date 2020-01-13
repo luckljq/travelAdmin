@@ -102,6 +102,15 @@
             </div>
         </div>
 
+        <!-- 删除提示框 -->
+        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+            <div class="del-dialog-cnt">是否确定删除？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="delVisible = false">取 消</el-button>
+                <el-button type="primary" @click="deleteFoods">确 定</el-button>
+              </span>
+        </el-dialog>
+
         <!-- 美食详情弹窗 -->
         <el-dialog title="美食详情" :visible.sync="showFoodDetail" width="500px" center>
             <el-row :gutter="20" style="text-align: center">
@@ -158,7 +167,7 @@
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots, addFood, getFoodList} from '../../api/sevApi'
+    import {getSpots, addFood, getFoodList, deleteFood} from '../../api/sevApi'
     let tableEle =  [{
         fixed: 'left',
         prop: 'scenicSpotName',
@@ -229,6 +238,7 @@
                 token: "Bearer " + JSON.parse(window.sessionStorage.getItem('UserState')).user.token,
                 imageUrl: '',
                 form:{},
+                delVisible:false,
                 showAddHotel:false,
                 showAddFood:false,
                 showFood:false,
@@ -260,7 +270,8 @@
                 strategyName:'',
                 foodImageUrl:'',
                 address:'',
-                description:''
+                description:'',
+                foodId:null,
             }
         },
         created() {
@@ -278,9 +289,21 @@
             getHotel() {
 
             },
+            //删除
+            deleteFoods() {
+              deleteFood(this.foodId).then(res =>{
+                  Message.success({
+                      message:res.message,
+                      center:true
+                  });
+                  this.delVisible = false;
+                  this.getFoods();
+              })
+            },
             //打开删除弹窗
             openDelete(row) {
-
+                this.foodId = row.id;
+                this.delVisible = true;
             },
             //获取美食列表
             getFoods() {

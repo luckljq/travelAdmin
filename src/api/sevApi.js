@@ -5,10 +5,17 @@ import request from '../utils/request';
  * @author ljq
  * @date 2020/1/7　9:09
  */
+//删除美食
+export const deleteFood = (id) => {
+    return request({
+        url:'/sev/food/' + id,
+        method: 'delete'
+    })
+};
 //获取美食列表
 export const getFoodList = (query) => {
     return request({
-        url:'sev/foods',
+        url:'/sev/foods',
         method: 'get',
         params:query
     })
