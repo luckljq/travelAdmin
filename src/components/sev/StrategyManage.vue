@@ -39,15 +39,19 @@
                 </el-breadcrumb>
             </div>
             <div class="container">
-<!--                <tableCom :tableData="tableData2" :rowNum="this.rowNum2" :tableEle="tableEle2" :total="this.total2"-->
-<!--                          v-on:getPageNumber="getPageNumber2">-->
-<!--                    <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">-->
-<!--                        <template slot-scope="scope">-->
-<!--                            <el-button type="text" icon="el-icon-info" @click="openImage(scope.row)">图片预览</el-button>-->
-<!--                            <el-button type="text" icon="el-icon-delete" class="red" @click="openDelete(scope.row)">删除图片</el-button>-->
-<!--                        </template>-->
-<!--                    </el-table-column>-->
-<!--                </tableCom>-->
+                <div class="handle-box">
+                    <el-input v-model="foodName" placeholder="美食名模糊查询" class="handle-input mr10"></el-input>
+                    <el-button type="primary" icon="el-icon-search" @click="getFoods">搜索</el-button>
+                </div>
+                <tableCom :tableData="tableData2" :rowNum="this.rowNum2" :tableEle="tableEle2" :total="this.total2"
+                          v-on:getPageNumber="getPageNumber2">
+                    <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
+                        <template slot-scope="scope">
+                            <el-button type="text" icon="el-icon-info" @click="openFoodDetail(scope.row)" >美食详情</el-button>
+                            <el-button type="text" icon="el-icon-delete" class="red" @click="openDelete(scope.row)">删除美食</el-button>
+                        </template>
+                    </el-table-column>
+                </tableCom>
             </div>
 
             <div class="crumbs">
@@ -98,6 +102,22 @@
             </div>
         </div>
 
+        <!-- 美食详情弹窗 -->
+        <el-dialog title="美食详情" :visible.sync="showFoodDetail" width="500px" center>
+            <el-row :gutter="20" style="text-align: center">
+                <el-col :span="6"><div > <el-tag>{{this.strategyName}} </el-tag></div></el-col>
+                <el-col :span="18"><div >店家：{{this.address}}</div></el-col>
+            </el-row>
+            <el-row :gutter="20" style="text-align: center">
+                <el-col :span="24"><div style="margin-top: 10px">
+                    <el-image :src="foodImageUrl"></el-image>
+                </div></el-col>
+            </el-row>
+            <el-row :gutter="20">
+                <el-col :span="24"><div >{{this.description}}</div></el-col>
+            </el-row>
+        </el-dialog>
+
         <!-- 新增美食弹窗 -->
         <el-dialog title="新增美食攻略" :visible.sync="showAddFood" width="560px"  center>
             <el-form :model="form" ref="form" label-width="100px" class="demo-ruleForm">
@@ -138,7 +158,7 @@
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots, addFood} from '../../api/sevApi'
+    import {getSpots, addFood, getFoodList} from '../../api/sevApi'
     let tableEle =  [{
         fixed: 'left',
         prop: 'scenicSpotName',
@@ -160,9 +180,52 @@
         label: '状态',
         width: ''
     }];
+    let tableEle2 =  [{
+        fixed: 'left',
+        prop: 'strategyName',
+        label: '美食名称',
+        width: ''
+    },{
+        fixed: '',
+        prop: 'scenicSpotName',
+        label: '所在城市',
+        width: ''
+    },{
+        fixed: '',
+        prop: 'address',
+        label: '推荐店家',
+        width: '500px'
+    },{
+        fixed: '',
+        prop: 'recommendTotal',
+        label: '点赞总数',
+        width: ''
+    },{
+        fixed: '',
+        prop: 'createTime',
+        label: '创建时间',
+        width: ''
+    }];
+    let tableEle3 =  [{
+        fixed: 'left',
+        prop: 'scenicSpotId',
+        label: '景区名',
+        width: ''
+    },{
+        fixed: '',
+        prop: 'imageUrl',
+        label: '图片链接',
+        width: '500px'
+    },{
+        fixed: '',
+        prop: 'createTime',
+        label: '创建时间',
+        width: ''
+    }];
     export default {
         data() {
             return {
+                showFoodDetail: false,
                 token: "Bearer " + JSON.parse(window.sessionStorage.getItem('UserState')).user.token,
                 imageUrl: '',
                 form:{},
@@ -179,12 +242,56 @@
                 //查询条件
                 name: '',
                 id:null,
+                //food表格初始化
+                tableData2: [],
+                tableEle2,
+                rowNum2: 5,
+                pageNumber2:1,
+                total2:0,
+                //查询条件
+                foodName: '',
+                //hotel表格初始化
+                tableData3: [],
+                tableEle3,
+                rowNum3: 5,
+                pageNumber3:1,
+                total3:0,
+                //food详情查看
+                strategyName:'',
+                foodImageUrl:'',
+                address:'',
+                description:''
             }
         },
         created() {
             this.getData();
         },
         methods:{
+            openFoodDetail(row) {
+                this.strategyName = row.strategyName;
+                this.foodImageUrl = row.imageUrl;
+                this.address = row.address;
+                this.description = row.description;
+                this.showFoodDetail = true;
+            },
+            //获取住宿列表
+            getHotel() {
+
+            },
+            //打开删除弹窗
+            openDelete(row) {
+
+            },
+            //获取美食列表
+            getFoods() {
+                getFoodList({
+                    id:this.id,
+                    name:this.foodName
+                }).then(res => {
+                    this.tableData2 = res.data.list;
+                    this.total2 = res.data.total;
+                })
+            },
             //新增美食
             addFoods() {
               addFood({
@@ -226,6 +333,7 @@
             //打开美食攻略
             openFood(row) {
                 this.id = row.scenicSpotId;
+                this.getFoods();
                 this.showHotel = false;
                 this.showFood = true;
             },
@@ -257,6 +365,16 @@
             getPageNumber(pageNumber) {
                 this.pageNumber = pageNumber;
                 this.getData()
+            },
+            //翻页2
+            getPageNumber2(pageNumber) {
+                this.pageNumber2 = pageNumber;
+                this.getFoods();
+            },
+            //翻页3
+            getPageNumber3(pageNumber) {
+                this.pageNumber3 = pageNumber;
+                this.getHotel();
             },
         },
         components: {

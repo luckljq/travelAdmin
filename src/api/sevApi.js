@@ -5,7 +5,14 @@ import request from '../utils/request';
  * @author ljq
  * @date 2020/1/7　9:09
  */
-
+//获取美食列表
+export const getFoodList = (query) => {
+    return request({
+        url:'sev/foods',
+        method: 'get',
+        params:query
+    })
+};
 //新增美食攻略
 export const addFood = (query) => {
     return request({
