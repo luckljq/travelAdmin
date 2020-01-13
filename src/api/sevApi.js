@@ -5,10 +5,20 @@ import request from '../utils/request';
  * @author ljq
  * @date 2020/1/7　9:09
  */
+
+//新增美食攻略
+export const addFood = (query) => {
+    return request({
+        url:'/sev/food',
+        method: 'post',
+        data: query
+    })
+};
+
 //删除图片
 export const deleteSpotImage = (id) => {
     return request({
-        url:'sev/spot/image/' + id,
+        url:'/sev/spot/image/' + id,
         method: 'delete'
     })
 };

@@ -142,7 +142,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button @click="editVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="addSpot">确认修改</el-button>
+                    <el-button type="primary" @click="addSpot">确认</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
