@@ -158,8 +158,50 @@
         </el-dialog>
 
         <!-- 新增住宿弹窗 -->
-        <el-dialog title="新增住宿攻略" :visible.sync="showAddHotel" width="300px" center>
-
+        <el-dialog title="新增住宿攻略" :visible.sync="showAddHotel" width="560px" center>
+            <el-form :model="hotelForm" ref="form" label-width="100px" class="demo-ruleForm">
+                <el-form-item label="酒店名字">
+                    <el-input v-model="hotelForm.strategyName"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="酒店电话">
+                    <el-input v-model="hotelForm.phone"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="酒店地址">
+                    <el-input v-model="hotelForm.address"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="价格">
+                    <el-input v-model="hotelForm.price"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="是否可以停车">
+                    <el-select v-model="hotelForm.isPark" placeholder="请选择">
+                        <el-option label="可以" value="1"></el-option>
+                        <el-option label="不可以" value="0"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="描述">
+                    <el-input type="textarea" v-model="hotelForm.description"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="图片上传">
+                    <el-upload
+                            action="http://localhost:8888/sev/hotel/upload"
+                            list-type="picture-card"
+                            :headers="{Authorization:token}"
+                            :file-list="file"
+                            :on-preview="handlePictureCardPreview"
+                            :on-success="onSuccess2"
+                            :on-remove="handleRemove"
+                    >
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                    <el-dialog :visible.sync="dialogVisible" :modal="false">
+                        <img width="100%" :src="dialogImageUrl" alt="">
+                    </el-dialog>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="showAddHotel = false">取 消</el-button>
+                    <el-button type="primary" @click="AddHotels">确认</el-button>
+                </el-form-item>
+            </el-form>
         </el-dialog>
     </div>
 
@@ -167,7 +209,7 @@
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots, addFood, getFoodList, deleteFood} from '../../api/sevApi'
+    import {getSpots, addFood, getFoodList, deleteFood, AddHotel} from '../../api/sevApi'
     let tableEle =  [{
         fixed: 'left',
         prop: 'scenicSpotName',
@@ -234,10 +276,16 @@
     export default {
         data() {
             return {
+                file:[],
+                fileList:[],
+                dialogImageUrl: '',
+                hotelForm:{
+                },
                 showFoodDetail: false,
                 token: "Bearer " + JSON.parse(window.sessionStorage.getItem('UserState')).user.token,
                 imageUrl: '',
                 form:{},
+                dialogVisible:false,
                 delVisible:false,
                 showAddHotel:false,
                 showAddFood:false,
@@ -278,6 +326,50 @@
             this.getData();
         },
         methods:{
+            //新增酒店
+            AddHotels() {
+                AddHotel({
+                    scenicSpotId:this.id,
+                    strategyName:this.hotelForm.strategyName,
+                    phone:this.hotelForm.phone,
+                    address:this.hotelForm.address,
+                    price:this.hotelForm.price,
+                    description:this.hotelForm.description,
+                    isPark:this.hotelForm.isPark,
+                    imageUrl:this.fileList
+                }).then(res => {
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    });
+                    this.showAddHotel = false;
+                    this.hotelForm = {};
+                    this.file = [];
+                    this.getHotel();
+                })
+            },
+            handleRemove(file, fileList) {
+                this.change(fileList);
+            },
+            onSuccess2(res, file, fileList) {
+                Message.success({
+                    message:res.message,
+                    center:true
+                });
+                this.change(fileList);
+            },
+            change(fileList) {
+                this.fileList = [];
+                fileList.forEach(file => {
+                    this.fileList.push(file.response.data)
+                });
+            },
+            //上传图片预览
+            handlePictureCardPreview(file) {
+                this.dialogImageUrl = file.url;
+                this.dialogVisible = true;
+            },
+
             openFoodDetail(row) {
                 this.strategyName = row.strategyName;
                 this.foodImageUrl = row.imageUrl;
