@@ -77,15 +77,15 @@
                 </el-breadcrumb>
             </div>
             <div class="container">
-<!--                <tableCom :tableData="tableData2" :rowNum="this.rowNum2" :tableEle="tableEle2" :total="this.total2"-->
-<!--                          v-on:getPageNumber="getPageNumber2">-->
-<!--                    <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">-->
-<!--                        <template slot-scope="scope">-->
-<!--                            <el-button type="text" icon="el-icon-info" @click="openImage(scope.row)">图片预览</el-button>-->
-<!--                            <el-button type="text" icon="el-icon-delete" class="red" @click="openDelete(scope.row)">删除图片</el-button>-->
-<!--                        </template>-->
-<!--                    </el-table-column>-->
-<!--                </tableCom>-->
+                <tableCom :tableData="tableData3" :rowNum="this.rowNum3" :tableEle="tableEle3" :total="this.total3"
+                          v-on:getPageNumber="getPageNumber3">
+                    <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
+                        <template slot-scope="scope">
+                            <el-button type="text" icon="el-icon-info" >酒店详情</el-button>
+                            <el-button type="text" icon="el-icon-delete" class="red" >删除酒店</el-button>
+                        </template>
+                    </el-table-column>
+                </tableCom>
             </div>
 
             <div class="crumbs">
@@ -209,7 +209,7 @@
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots, addFood, getFoodList, deleteFood, AddHotel} from '../../api/sevApi'
+    import {getSpots, addFood, getFoodList, deleteFood, AddHotel, getHotelList} from '../../api/sevApi'
     let tableEle =  [{
         fixed: 'left',
         prop: 'scenicSpotName',
@@ -259,14 +259,24 @@
     }];
     let tableEle3 =  [{
         fixed: 'left',
-        prop: 'scenicSpotId',
-        label: '景区名',
+        prop: 'strategyName',
+        label: '酒店名称',
         width: ''
     },{
         fixed: '',
-        prop: 'imageUrl',
-        label: '图片链接',
-        width: '500px'
+        prop: 'address',
+        label: '酒店地址',
+        width: '400px'
+    },{
+        fixed: '',
+        prop: 'price',
+        label: '酒店价格',
+        width: ''
+    },{
+        fixed: '',
+        prop: 'isPark',
+        label: '是否可以停车',
+        width: ''
     },{
         fixed: '',
         prop: 'createTime',
@@ -379,7 +389,22 @@
             },
             //获取住宿列表
             getHotel() {
-
+                getHotelList({
+                    id:this.id,
+                    pageNumber:this.pageNumber3,
+                    pageSize:this.rowNum3,
+                }).then(res => {
+                    let list = res.data.list;
+                    list.forEach(i => {
+                        if (i.isPark == 1) {
+                            i.isPark = '可以';
+                        } else {
+                            i.isPark = '不可以';
+                        }
+                    });
+                    this.tableData3 = list;
+                    this.total3 = res.data.total;
+                })
             },
             //删除
             deleteFoods() {
@@ -401,7 +426,9 @@
             getFoods() {
                 getFoodList({
                     id:this.id,
-                    name:this.foodName
+                    name:this.foodName,
+                    pageNumber:this.pageNumber2,
+                    pageSize:this.rowNum2
                 }).then(res => {
                     this.tableData2 = res.data.list;
                     this.total2 = res.data.total;
@@ -442,6 +469,7 @@
             //打开住宿攻略
             openHotel(row) {
                 this.id = row.scenicSpotId;
+                this.getHotel();
                 this.showFood = false;
                 this.showHotel = true;
             },

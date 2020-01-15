@@ -5,6 +5,14 @@ import request from '../utils/request';
  * @author ljq
  * @date 2020/1/7　9:09
  */
+//获取酒店列表
+export const getHotelList = (query) => {
+    return request({
+        url: '/sev/hotels',
+        method: 'get',
+        params: query
+    })
+};
 //新增酒店住宿
 export const AddHotel = (query) => {
     return request({
