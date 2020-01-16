@@ -81,7 +81,7 @@
                           v-on:getPageNumber="getPageNumber3">
                     <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
                         <template slot-scope="scope">
-                            <el-button type="text" icon="el-icon-info" >酒店详情</el-button>
+                            <el-button type="text" icon="el-icon-info" @click="openHotelDetail(scope.row)">酒店详情</el-button>
                             <el-button type="text" icon="el-icon-delete" class="red" >删除酒店</el-button>
                         </template>
                     </el-table-column>
@@ -112,10 +112,10 @@
         </el-dialog>
 
         <!-- 美食详情弹窗 -->
-        <el-dialog title="美食详情" :visible.sync="showFoodDetail" width="500px" center>
+        <el-dialog title="美食详情" :visible.sync="showFoodDetail" width="700px">
             <el-row :gutter="20" style="text-align: center">
-                <el-col :span="6"><div > <el-tag>{{this.strategyName}} </el-tag></div></el-col>
-                <el-col :span="18"><div >店家：{{this.address}}</div></el-col>
+                <el-divider>{{this.strategyName}}</el-divider>
+                <el-col :span="24"><div >店家：{{this.address}}</div></el-col>
             </el-row>
             <el-row :gutter="20" style="text-align: center">
                 <el-col :span="24"><div style="margin-top: 10px">
@@ -128,8 +128,8 @@
         </el-dialog>
 
         <!-- 新增美食弹窗 -->
-        <el-dialog title="新增美食攻略" :visible.sync="showAddFood" width="560px"  center>
-            <el-form :model="form" ref="form" label-width="100px" class="demo-ruleForm">
+        <el-dialog title="新增美食攻略" :visible.sync="showAddFood" width="560px"   center>
+            <el-form :model="form" ref="form" label-width="100px" >
                 <el-form-item label="美食名字">
                     <el-input v-model="form.strategyName"  style="width: 360px"></el-input>
                 </el-form-item>
@@ -202,6 +202,18 @@
                     <el-button type="primary" @click="AddHotels">确认</el-button>
                 </el-form-item>
             </el-form>
+        </el-dialog>
+
+        <!-- 住宿详情弹窗 -->
+        <el-dialog title="住宿详情" :visible.sync="showHotelDetail" width="700px">
+            <el-row :gutter="20">
+                <el-divider>{{this.hotelDetail.strategyName}}</el-divider>
+                    <div class="mt20">酒店电话： {{this.hotelDetail.phone}} </div>
+                    <div class="mt20">简介： {{this.hotelDetail.description}} </div>
+            </el-row>
+            <div class="mt20" style="height: 360px; overflow-y: scroll">
+                <img width="100%" :src="url" alt="" v-for="url in this.hotelDetail.imageUrl">
+            </div>
         </el-dialog>
     </div>
 
@@ -286,6 +298,8 @@
     export default {
         data() {
             return {
+                hotelDetail:{},
+                showHotelDetail:false,
                 file:[],
                 fileList:[],
                 dialogImageUrl: '',
@@ -336,6 +350,12 @@
             this.getData();
         },
         methods:{
+            //打开酒店详情
+            openHotelDetail(row) {
+                console.log(row);
+                this.hotelDetail = row;
+                this.showHotelDetail = true;
+            },
             //新增酒店
             AddHotels() {
                 AddHotel({
@@ -566,6 +586,10 @@
 
     .red {
         color: #ff0000;
+    }
+
+    .mt20 {
+        margin-top: 20px;
     }
 
     .mr10 {
