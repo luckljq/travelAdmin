@@ -5,6 +5,14 @@ import request from '../utils/request';
  * @author ljq
  * @date 2020/1/7　9:09
  */
+//删除酒店
+export const deleteHotel = (id) => {
+    return request({
+        url:'/sev/hotel/' + id,
+        method: 'delete'
+    })
+};
+
 //获取酒店列表
 export const getHotelList = (query) => {
     return request({

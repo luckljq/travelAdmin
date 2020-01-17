@@ -82,7 +82,7 @@
                     <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
                         <template slot-scope="scope">
                             <el-button type="text" icon="el-icon-info" @click="openHotelDetail(scope.row)">酒店详情</el-button>
-                            <el-button type="text" icon="el-icon-delete" class="red" >删除酒店</el-button>
+                            <el-button type="text" icon="el-icon-delete" class="red" @click="openDelete2(scope.row)" >删除酒店</el-button>
                         </template>
                     </el-table-column>
                 </tableCom>
@@ -215,13 +215,22 @@
                 <img width="100%" :src="url" alt="" v-for="url in this.hotelDetail.imageUrl">
             </div>
         </el-dialog>
+
+        <!-- 删除提示框 -->
+        <el-dialog title="提示" :visible.sync="delVisible2" width="300px" center>
+            <div class="del-dialog-cnt">是否确定删除？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="delVisible2 = false">取 消</el-button>
+                <el-button type="primary" @click="deleteHotels">确 定</el-button>
+              </span>
+        </el-dialog>
     </div>
 
 </template>
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots, addFood, getFoodList, deleteFood, AddHotel, getHotelList} from '../../api/sevApi'
+    import {getSpots, addFood, getFoodList, deleteFood, AddHotel, getHotelList, deleteHotel} from '../../api/sevApi'
     let tableEle =  [{
         fixed: 'left',
         prop: 'scenicSpotName',
@@ -298,6 +307,7 @@
     export default {
         data() {
             return {
+                delVisible2:false,
                 hotelDetail:{},
                 showHotelDetail:false,
                 file:[],
@@ -344,12 +354,29 @@
                 address:'',
                 description:'',
                 foodId:null,
+                hotelId:null
             }
         },
         created() {
             this.getData();
         },
         methods:{
+            //打开删除弹窗
+            openDelete2(row) {
+                this.hotelId = row.id;
+                this.delVisible2 = true;
+            },
+            //删除
+            deleteHotels() {
+                deleteHotel(this.hotelId).then(res => {
+                    Message.success({
+                        message: res.message,
+                        center: true
+                    });
+                    this.delVisible2 = false;
+                    this.getHotel();
+                })
+            },
             //打开酒店详情
             openHotelDetail(row) {
                 console.log(row);
