@@ -4,16 +4,8 @@ module.exports = {
     productionSourceMap: false,
     configureWebpack: {
         devtool:'source-map'
+    },
+    devServer: {
+        port:8089
     }
-    // devServer: {
-    //     proxy: {
-    //         '/api':{
-    //             target:'http://jsonplaceholder.typicode.com',
-    //             changeOrigin:true,
-    //             pathRewrite:{
-    //                 '/api':''
-    //             }
-    //         }
-    //     }
-    // }
 };
