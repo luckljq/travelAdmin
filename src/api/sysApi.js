@@ -5,6 +5,15 @@ import request from '../utils/request';
  * @author ljq
  * @date 2019/12/24　11:16
  */
+//新增公告
+export const addNotice = (query) => {
+    return request({
+        url:'/sys/notice',
+        method: 'post',
+        data: query
+    })
+};
+
 //修改公告
 export const updateNotice = (query) => {
     return request({

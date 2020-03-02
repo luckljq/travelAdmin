@@ -15,8 +15,8 @@
         </div>
         <div class="container">
             <div class="handle-box">
-                <el-button type="primary" icon="el-icon-circle-plus" class="handle-del mr10">增加</el-button>
-                <el-input v-model="name" placeholder="用户昵称模糊查询" class="handle-input mr10"></el-input>
+                <el-button type="primary" icon="el-icon-circle-plus" class="handle-del mr10" @click="handleAdd">增加</el-button>
+                <el-input v-model="name" placeholder="公告标题模糊查询" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
             </div>
             <tableCom :tableData="tableData" :rowNum="this.rowNum" :tableEle="tableEle" :total="this.total"
@@ -24,7 +24,7 @@
                 <el-table-column slot="btn-operation"
                                  fixed="right"
                                  label="操作"
-                                 width="200px">
+                                 width="120px">
                     <template slot-scope="scope">
                         <el-button
                                 type="text"
@@ -44,6 +44,26 @@
             </tableCom>
         </div>
 
+        <!-- 新增弹出框 -->
+        <el-dialog title="新增公告" :visible.sync="addVisible" width="25%">
+            <el-form :model="addFroms" :rules="addRules" ref="addFroms" label-width="100px" class="demo-ruleForm">
+                <el-form-item label="公告标题" prop="name">
+                    <el-input v-model="addFroms.name" style="width: 260px"></el-input>
+                </el-form-item>
+                <el-form-item label="公告内容" prop="description">
+                    <el-input type="textarea"
+                              :autosize="{ minRows: 5, maxRows: 10}"
+                              v-model="addFroms.description"
+                              style="width: 260px">
+                    </el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="editVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="addNotice('addFroms')">确认新增</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑公告" :visible.sync="editVisible" width="25%">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
@@ -59,7 +79,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button @click="editVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="editUser('ruleForm')">确认修改</el-button>
+                    <el-button type="primary" @click="editNotice('ruleForm')">确认修改</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -77,13 +97,13 @@
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getNotices, deleteNotice, updateNotice} from  '../../api/sysApi'
+    import {getNotices, deleteNotice, updateNotice, addNotice} from  '../../api/sysApi'
 
     let tableEle = [{
         fixed: 'left',
         prop: 'noticeName',
         label: '公告标题',
-        width: ''
+        width: '300'
     }, {
         fixed: '',
         prop: 'senderName',
@@ -93,7 +113,7 @@
         fixed: '',
         prop: 'description',
         label: '公告内容',
-        width: '600'
+        width: '700'
     }, {
         fixed: '',
         prop: 'createTime',
@@ -108,6 +128,7 @@
     export default {
         data() {
             return {
+                addVisible:false,
                 editVisible:false,
                 delVisible:false,
                 //表格初始化
@@ -133,6 +154,21 @@
                         { required: true, message: '请输入公告内容', trigger: 'blur' },
                         { min: 2, max: 2000, message: '最长度为 2000 个字符', trigger: 'blur' }
                     ]
+                },
+                //新增
+                addFroms: {
+                    name: '',
+                    description: '',
+                },
+                addRules: {
+                    name: [
+                        { required: true, message: '请输入公告标题', trigger: 'blur' },
+                        { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
+                    ],
+                    description: [
+                        { required: true, message: '请输入公告内容', trigger: 'blur' },
+                        { min: 2, max: 2000, message: '最长度为 2000 个字符', trigger: 'blur' }
+                    ]
                 }
             }
         },
@@ -140,8 +176,30 @@
             this.getData();
         },
         methods:{
+            //新增公告
+            addNotice(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        addNotice({
+                            senderId:this.$store.getters.getUser.id,
+                            noticeName: this.addFroms.name,
+                            description: this.addFroms.description
+                        }).then(res => {
+                            this.addVisible = false;
+                            this.getData();
+                            Message.success({
+                                message:res.message,
+                                center:true
+                            })
+                        })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
             //修改公告信息
-            editUser(formName){
+            editNotice(formName){
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         updateNotice({
@@ -185,6 +243,10 @@
             handleDelete(row) {
                 this.id = row.id;
                 this.delVisible = true;
+            },
+            //新增页面显示
+            handleAdd() {
+                this.addVisible = true;
             },
             getData() {
                 getNotices({
