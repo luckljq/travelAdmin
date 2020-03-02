@@ -5,6 +5,14 @@ import request from '../utils/request';
  * @author ljq
  * @date 2019/12/24　11:16
  */
+//获取公告列表
+export const getNotices = (query) => {
+    return request({
+        url: '/sys/notices',
+        method: 'get',
+        params: query
+    })
+};
 //删除角色
 export const deleteRole = (id) => {
     return request({
