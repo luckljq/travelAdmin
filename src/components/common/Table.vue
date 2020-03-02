@@ -6,12 +6,13 @@
 */
 <template>
     <div>
-        <el-table :data="tableData" border class="table" ref="multipleTable">
+        <el-table :data="tableData" border class="table" ref="multipleTable" >
             <el-table-column v-for="(ele,i) in  tableEle" :key="i"
                              :fixed="ele.fixed"
                              :prop="ele.prop"
                              :label="ele.label"
-                             :width="ele.width">
+                             :width="ele.width"
+            >
             </el-table-column>
             <slot name="btn-operation"></slot>
         </el-table>

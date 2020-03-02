@@ -63,9 +63,14 @@
                     if (response.data !== null) {
                         this.items = response.data;
                         sessionStorage.setItem('state','已登陆');
+                        sessionStorage.setItem('image', "http://localhost" + this.items.user.headImage);
                         sessionStorage.setItem('token',this.items.token);
                         sessionStorage.setItem('privileges',JSON.stringify(this.items.user.privileges));
-                        this.$store.dispatch('asyncUpdateUser', {username:this.items.user.userName,token:this.items.token});
+                        this.$store.dispatch('asyncUpdateUser', {
+                            id: this.items.user.userId,
+                            username:this.items.user.userName,
+                            token:this.items.token
+                        });
                         sessionStorage.setItem('UserState', JSON.stringify(this.$store.state.user));
                         this.$router.push('/dashboard');
                     }

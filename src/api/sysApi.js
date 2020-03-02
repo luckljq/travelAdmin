@@ -5,6 +5,21 @@ import request from '../utils/request';
  * @author ljq
  * @date 2019/12/24　11:16
  */
+//修改公告
+export const updateNotice = (query) => {
+    return request({
+        url: '/sys/notice',
+        method: 'put',
+        data: query
+    })
+};
+//删除公告
+export const deleteNotice = (id) => {
+    return request({
+        url:'/sys/notice/' + id,
+        method: 'delete'
+    })
+};
 //获取公告列表
 export const getNotices = (query) => {
     return request({
