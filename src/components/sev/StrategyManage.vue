@@ -48,6 +48,7 @@
                     <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
                         <template slot-scope="scope">
                             <el-button type="text" icon="el-icon-info" @click="openFoodDetail(scope.row)" >美食详情</el-button>
+                            <el-button type="text" icon="el-icon-info" @click="openEditFood(scope.row)" >编辑美食</el-button>
                             <el-button type="text" icon="el-icon-delete" class="red" @click="openDelete(scope.row)">删除美食</el-button>
                         </template>
                     </el-table-column>
@@ -77,11 +78,16 @@
                 </el-breadcrumb>
             </div>
             <div class="container">
+                <div class="handle-box">
+                    <el-input v-model="hotelName" placeholder="住宿名模糊查询" class="handle-input mr10"></el-input>
+                    <el-button type="primary" icon="el-icon-search" @click="getHotel">搜索</el-button>
+                </div>
                 <tableCom :tableData="tableData3" :rowNum="this.rowNum3" :tableEle="tableEle3" :total="this.total3"
                           v-on:getPageNumber="getPageNumber3">
                     <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
                         <template slot-scope="scope">
                             <el-button type="text" icon="el-icon-info" @click="openHotelDetail(scope.row)">酒店详情</el-button>
+                            <el-button type="text" icon="el-icon-info" @click="openEditHotel(scope.row)">编辑酒店</el-button>
                             <el-button type="text" icon="el-icon-delete" class="red" @click="openDelete2(scope.row)" >删除酒店</el-button>
                         </template>
                     </el-table-column>
@@ -102,7 +108,7 @@
             </div>
         </div>
 
-        <!-- 删除提示框 -->
+        <!-- 删除美食提示框 -->
         <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
             <div class="del-dialog-cnt">是否确定删除？</div>
             <span slot="footer" class="dialog-footer">
@@ -137,7 +143,7 @@
                     <el-input v-model="form.address"  style="width: 360px"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
-                    <el-input type="textarea" v-model="form.description"  style="width: 360px"></el-input>
+                    <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.description"  style="width: 360px"></el-input>
                 </el-form-item>
                 <el-form-item label="图片上传">
                     <el-upload
@@ -153,6 +159,28 @@
                 <el-form-item>
                     <el-button @click="showAddFood = false">取 消</el-button>
                     <el-button type="primary" @click="addFoods">确认</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+        <!-- 修改美食弹窗 -->
+        <el-dialog title="修改美食攻略" :visible.sync="showEditFood" width="560px"   center>
+            <el-form :model="form2" ref="form" label-width="100px" >
+                <el-form-item label="美食名字">
+                    <el-input v-model="form2.strategyName"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="推荐地址">
+                    <el-input v-model="form2.address"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="点赞数">
+                    <el-input v-model="form2.recommendTotal"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="描述">
+                    <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" v-model="form2.description"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="showEditFood = false">取 消</el-button>
+                    <el-button type="primary" @click="editFood">确认</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -179,7 +207,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="描述">
-                    <el-input type="textarea" v-model="hotelForm.description"  style="width: 360px"></el-input>
+                    <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" v-model="hotelForm.description"  style="width: 360px"></el-input>
                 </el-form-item>
                 <el-form-item label="图片上传">
                     <el-upload
@@ -199,7 +227,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button @click="showAddHotel = false">取 消</el-button>
-                    <el-button type="primary" @click="AddHotels">确认</el-button>
+                    <el-button type="primary" @click="addHotels">确认</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -216,7 +244,41 @@
             </div>
         </el-dialog>
 
-        <!-- 删除提示框 -->
+        <!-- 修改住宿弹窗 -->
+        <el-dialog title="修改美食攻略" :visible.sync="showEditHotel" width="560px"   center>
+            <el-form :model="hotelForm2" ref="form" label-width="100px" class="demo-ruleForm">
+                <el-form-item label="酒店名字">
+                    <el-input v-model="hotelForm2.strategyName"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="酒店电话">
+                    <el-input v-model="hotelForm2.phone"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="酒店地址">
+                    <el-input v-model="hotelForm2.address"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="价格">
+                    <el-input v-model="hotelForm2.price"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="点赞数">
+                    <el-input v-model="hotelForm2.recommendTotal"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item label="是否可以停车">
+                    <el-select v-model="hotelForm2.isPark" placeholder="请选择">
+                        <el-option label="可以" value="1"></el-option>
+                        <el-option label="不可以" value="0"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="描述">
+                    <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" v-model="hotelForm2.description"  style="width: 360px"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="showEditHotel = false">取 消</el-button>
+                    <el-button type="primary" @click="editHotel">确认</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+        <!-- 删除住宿提示框 -->
         <el-dialog title="提示" :visible.sync="delVisible2" width="300px" center>
             <div class="del-dialog-cnt">是否确定删除？</div>
             <span slot="footer" class="dialog-footer">
@@ -230,7 +292,8 @@
 <script>
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
-    import {getSpots, addFood, getFoodList, deleteFood, AddHotel, getHotelList, deleteHotel} from '../../api/sevApi'
+    import {getSpots, addFood, getFoodList, deleteFood,
+        AddHotel, getHotelList, deleteHotel, updateFood, updateHotel} from '../../api/sevApi'
     let tableEle =  [{
         fixed: 'left',
         prop: 'scenicSpotName',
@@ -313,16 +376,32 @@
                 file:[],
                 fileList:[],
                 dialogImageUrl: '',
-                hotelForm:{
+                hotelForm:{},
+                hotelForm2:{
+                    strategyName:'',
+                    phone: '',
+                    address: '',
+                    price: '',
+                    description: '',
+                    isPark: '',
+                    recommendTotal: 0
                 },
                 showFoodDetail: false,
                 token: "Bearer " + JSON.parse(window.sessionStorage.getItem('UserState')).user.token,
                 imageUrl: '',
                 form:{},
+                form2:{
+                    strategyName:'',
+                    address: '',
+                    description: '',
+                    recommendTotal: 0
+                },
                 dialogVisible:false,
                 delVisible:false,
                 showAddHotel:false,
                 showAddFood:false,
+                showEditFood: false,
+                showEditHotel: false,
                 showFood:false,
                 showHotel:false,
                 //表格初始化
@@ -342,6 +421,7 @@
                 total2:0,
                 //查询条件
                 foodName: '',
+                hotelName: '',
                 //hotel表格初始化
                 tableData3: [],
                 tableEle3,
@@ -379,12 +459,42 @@
             },
             //打开酒店详情
             openHotelDetail(row) {
-                console.log(row);
                 this.hotelDetail = row;
                 this.showHotelDetail = true;
             },
+            editHotel() {
+                updateHotel({
+                    id: this.hotelId,
+                    strategyName: this.hotelForm2.strategyName,
+                    address: this.hotelForm2.address,
+                    phone: this.hotelForm2.phone,
+                    price: this.hotelForm2.price,
+                    recommendTotal: this.hotelForm2.recommendTotal,
+                    isPark: this.hotelForm2.isPark  == "可以" ? 1 : 0,
+                    description: this.hotelForm2.description,
+                }).then(res => {
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    });
+                    this.showEditHotel = false;
+                    this.getHotel();
+                })
+            },
+            openEditHotel(row) {
+                this.hotelForm2.strategyName = row.strategyName;
+                this.hotelForm2.address = row.address;
+                this.hotelForm2.phone = row.phone;
+                this.hotelForm2.price = row.price;
+                this.hotelForm2.recommendTotal = row.recommendTotal;
+                this.hotelForm2.isPark = row.isPark;
+                this.hotelForm2.description = row.description;
+                this.hotelId = row.id;
+                this.showEditHotel = true;
+                console.log(this.hotelForm2.isPark);
+            },
             //新增酒店
-            AddHotels() {
+            addHotels() {
                 AddHotel({
                     scenicSpotId:this.id,
                     strategyName:this.hotelForm.strategyName,
@@ -434,10 +544,35 @@
                 this.description = row.description;
                 this.showFoodDetail = true;
             },
+            editFood() {
+                updateFood({
+                    id: this.foodId,
+                    strategyName: this.form2.strategyName,
+                    address: this.form2.address,
+                    description: this.form2.description,
+                    recommendTotal: this.form2.recommendTotal,
+                }).then(res => {
+                    Message.success({
+                        message:res.message,
+                        center:true
+                    });
+                    this.showEditFood = false;
+                    this.getFoods();
+                })
+            },
+            openEditFood(row) {
+                this.foodId = row.id;
+                this.form2.strategyName = row.strategyName;
+                this.form2.address = row.address;
+                this.form2.description = row.description;
+                this.form2.recommendTotal = row.recommendTotal;
+                this.showEditFood = true;
+            },
             //获取住宿列表
             getHotel() {
                 getHotelList({
                     id:this.id,
+                    name: this.hotelName,
                     pageNumber:this.pageNumber3,
                     pageSize:this.rowNum3,
                 }).then(res => {
@@ -495,6 +630,8 @@
                       center:true
                   });
                   this.showAddFood = false;
+                  this.form = {};
+                  this.getFoods();
               })
             },
             //上传成功
@@ -531,6 +668,7 @@
             getData() {
                 getSpots({
                     name: this.name,
+                    type: 1,
                     pageNumber: this.pageNumber,
                     pageSize: this.rowNum
                 }).then(res => {

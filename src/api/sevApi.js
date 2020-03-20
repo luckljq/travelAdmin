@@ -5,6 +5,24 @@ import request from '../utils/request';
  * @author ljq
  * @date 2020/1/7　9:09
  */
+//修改酒店攻略
+export const updateHotel =(query) => {
+    return request({
+        url:'/sev/hotel',
+        method:'put',
+        data: query
+    })
+};
+
+//修改美食攻略
+export const updateFood = (query) => {
+    return request({
+        url: '/sev/food',
+        method:'put',
+        data: query
+    })
+};
+
 //删除酒店
 export const deleteHotel = (id) => {
     return request({

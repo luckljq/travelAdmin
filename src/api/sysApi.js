@@ -32,7 +32,7 @@ export const deleteNotice = (id) => {
 //获取公告列表
 export const getNotices = (query) => {
     return request({
-        url: '/sys/notices',
+        url: '/sys/user/notices',
         method: 'get',
         params: query
     })

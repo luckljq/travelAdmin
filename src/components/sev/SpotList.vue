@@ -52,33 +52,35 @@
                 <el-form-item label="点赞总数" class="left">
                     <el-input v-model="spot.recommendTotal"></el-input>
                 </el-form-item>
-                <div v-if="spot.scenicSpotType == '景点'">
-                    <div><el-form-item label="景点电话" class="left">
-                        <el-input v-model="spot.scenicSpotPhone"></el-input>
-                    </el-form-item>
-                        <el-form-item label="景点网址" class="left">
-                            <el-input v-model="spot.scenicSpotUrl"></el-input>
+                <div>
+                    <div v-if="spot.scenicSpotType == '景点'">
+                        <div><el-form-item label="景点电话" class="left">
+                            <el-input v-model="spot.scenicSpotPhone"></el-input>
                         </el-form-item>
-                        <el-form-item label="参考用时" class="left">
-                            <el-input v-model="spot.useTime"></el-input>
-                        </el-form-item>
-                    </div>
-                    <div class="left">
-                        <el-form-item label="开放时间">
-                            <el-input type="textarea" v-model="spot.openTime" style="width: 500px"></el-input>
-                        </el-form-item>
-                        <el-form-item label="交通">
-                            <el-input type="textarea" v-model="spot.traffic" style="width: 500px"></el-input>
-                        </el-form-item>
-                    </div>
-                    <div class="left">
-                        <el-form-item label="景点票价">
-                            <el-input type="textarea" v-model="spot.admissionTicket" style="width: 900px"></el-input>
-                        </el-form-item>
+                            <el-form-item label="景点网址" class="left">
+                                <el-input v-model="spot.scenicSpotUrl"></el-input>
+                            </el-form-item>
+                            <el-form-item label="参考用时" class="left">
+                                <el-input v-model="spot.useTime"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div class="left">
+                            <el-form-item label="开放时间">
+                                <el-input type="textarea" v-model="spot.openTime" style="width: 500px"></el-input>
+                            </el-form-item>
+                            <el-form-item label="交通">
+                                <el-input type="textarea" v-model="spot.traffic" style="width: 500px"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div class="left">
+                            <el-form-item label="景点票价">
+                                <el-input type="textarea" v-model="spot.admissionTicket" style="width: 900px"></el-input>
+                            </el-form-item>
+                        </div>
                     </div>
                     <div class="left">
                         <el-form-item label="景点描述">
-                            <el-input type="textarea" v-model="spot.description" style="width: 900px"></el-input>
+                            <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" v-model="spot.description" style="width: 900px"></el-input>
                         </el-form-item>
                     </div>
                 </div>
