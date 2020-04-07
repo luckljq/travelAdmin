@@ -1,0 +1,268 @@
+<template slot-scope="scope">
+    <div class="sidebar">
+        <div class="crumbs">
+            <el-breadcrumb separator="/">
+                <el-breadcrumb-item>
+                    <i class="el-icon-lx-cascades"></i> 景区列表
+                </el-breadcrumb-item>
+            </el-breadcrumb>
+        </div>
+        <div class="container">
+            <div class="handle-box">
+                <el-input v-model="name" placeholder="景区名模糊查询" class="handle-input mr10"></el-input>
+                <el-button type="primary" icon="el-icon-search" @click="getData">搜索</el-button>
+            </div>
+            <tableCom :tableData="tableData" :rowNum="this.rowNum" :tableEle="tableEle" :total="this.total"
+                      v-on:getPageNumber="getPageNumber">
+                <el-table-column slot="btn-operation"
+                                 fixed="right"
+                                 label="操作"
+                                 width="300px">
+                    <template slot-scope="scope">
+                        <el-button type="text" icon="el-icon-info" @click="showDiary(scope.row)">查看相关游记</el-button>
+                    </template>
+                </el-table-column>
+            </tableCom>
+        </div>
+        <div v-show="show">
+            <div class="crumbs">
+                <el-breadcrumb separator="/">
+                    <el-breadcrumb-item>
+                        <i class="el-icon-lx-cascades"></i> 游记列表
+                    </el-breadcrumb-item>
+                </el-breadcrumb>
+            </div>
+            <div class="container">
+                <div class="handle-box">
+                    <el-input v-model="title" placeholder="游记标题模糊查询" class="handle-input mr10"></el-input>
+                    <el-button type="primary" icon="el-icon-search" @click="getDiary">搜索</el-button>
+                </div>
+                <tableCom :tableData="tableData2" :rowNum="this.rowNum2" :tableEle="tableEle2" :total="this.total2"
+                          v-on:getPageNumber="getPageNumber2">
+                    <el-table-column slot="btn-operation"
+                                     fixed="right"
+                                     label="操作"
+                                     >
+                        <template slot-scope="scope">
+                            <el-button type="text" icon="el-icon-info" @click="showDetails(scope.row)">详情</el-button>
+                            <el-button type="text" icon="el-icon-delete" class="red" @click="openDelete(scope.row)" >删除</el-button>
+                        </template>
+                    </el-table-column>
+                </tableCom>
+            </div>
+        </div>
+
+        <!-- 游记详情预览框 -->
+        <el-dialog title="游记详情" top="20px" :visible.sync="detailsVisible">
+            <div style="padding: 0 50px">
+                <div class="detail-title">
+                    {{diary.title}}
+                </div>
+                <div class="detail-info">
+                    {{diary.description}}
+                </div>
+                <div class="mt20" style="height: 500px; overflow-y: scroll" v-show="show2">
+                    <img width="100%" :src="url" alt="" v-for="url in this.diary.images">
+                </div>
+            </div>
+        </el-dialog>
+
+        <!-- 删除提示框 -->
+        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+            <div class="del-dialog-cnt">是否确定删除？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="delVisible = false">取 消</el-button>
+                <el-button type="primary" @click="deleteDiary">确 定</el-button>
+              </span>
+        </el-dialog>
+    </div>
+</template>
+
+<script>
+    import {Message} from 'element-ui'
+    import tableCom from '../common/Table.vue'
+    import {getSpots} from '../../api/sevApi'
+    import {getDiaries, deleteDiary} from '../../api/active'
+
+    let tableEle = [{
+        fixed: 'left',
+        prop: 'scenicSpotName',
+        label: '景区名',
+        width: ''
+    }, {
+        fixed: '',
+        prop: 'scenicSpotType',
+        label: '景区类型',
+        width: ''
+    }, {
+        fixed: '',
+        prop: 'recommendTotal',
+        label: '点赞总数',
+        width: ''
+    }, {
+        fixed: '',
+        prop: 'isEnable',
+        label: '状态',
+        width: ''
+    }];
+    let tableEle2 = [{
+        fixed: 'left',
+        prop: 'title',
+        label: '游记标题',
+        width: ''
+    }, {
+        fixed: '',
+        prop: 'destination',
+        label: '目的地',
+        width: ''
+    }, {
+        fixed: '',
+        prop: 'userName',
+        label: '用户名',
+        width: ''
+    }, {
+        fixed: '',
+        prop: 'recommendTotal',
+        label: '点赞数',
+        width: ''
+    }, {
+        fixed: '',
+        prop: 'createTime',
+        label: '创建时间',
+        width: ''
+    }];
+    export default {
+        data() {
+            return {
+                show2: false,
+                diary: {},
+                delVisible: false,
+                detailsVisible: false,
+                show: false,
+                spot: {},
+                //表格初始化
+                tableData: [],
+                tableEle,
+                rowNum: 5,
+                pageNumber: 1,
+                total: 0,
+                //表格2初始化
+                tableData2: [],
+                tableEle2,
+                rowNum2: 5,
+                pageNumber2: 1,
+                total2: 0,
+                //查询条件
+                spotId: null,
+                name: '',
+                title: '',
+                diaryId:null,
+            }
+        },
+        created() {
+            this.getData();
+        },
+        methods: {
+            deleteDiary() {
+                deleteDiary(this.diaryId).then(res =>{
+                   Message.success({
+                       message: res.message,
+                       center: true
+                   });
+                   this.delVisible = false;
+                   this.getDiary();
+                });
+            },
+            openDelete(row) {
+                this.diaryId = row.id;
+                this.delVisible = true;
+            },
+            showDetails(row) {
+                this.show2 = false;
+                this.detailsVisible = true;
+                this.diary = row;
+                if (row.images.length > 0) {
+                    this.show2 = true;
+                }
+            },
+            getDiary() {
+                getDiaries({
+                    spotId: this.spotId,
+                    name: this.title,
+                    pageNumber: this.pageNumber2,
+                    pageSize: this.rowNum2,
+                }).then(res => {
+                    this.tableData2 = res.data.list;
+                    this.total2 = res.data.total;
+                })
+            },
+            showDiary(row) {
+                this.spotId = row.scenicSpotId;
+                this.show = true;
+                this.getDiary();
+            },
+            //翻页
+            getPageNumber(pageNumber) {
+                this.pageNumber = pageNumber;
+                this.getData();
+            },
+            //翻页2
+            getPageNumber2(pageNumber) {
+                this.pageNumber2 = pageNumber;
+                this.getDiary();
+            },
+            getData() {
+                getSpots({
+                    name: this.name,
+                    pageNumber: this.pageNumber,
+                    pageSize: this.rowNum
+                }).then(res => {
+                    let list = res.data.list;
+                    list.forEach(list => {
+                        if (list.scenicSpotType === 1) {
+                            list.scenicSpotType = '城市'
+                        } else {
+                            list.scenicSpotType = '景点'
+                        }
+                        if (list.isEnable === 0) {
+                            list.isEnable = '禁用'
+                        } else {
+                            list.isEnable = '可用'
+                        }
+                    });
+                    this.tableData = res.data.list;
+                    this.total = res.data.total;
+                })
+            },
+        },
+        components: {
+            tableCom
+        }
+    }
+</script>
+<style scoped>
+    .detail-info {
+        padding: 20px 20px;
+    }
+    .red {
+        color: #ff0000;
+    }
+    .detail-title {
+        padding: 0 20px;
+        text-align: center;
+        font-size: 20px;
+    }
+
+    .handle-box {
+        margin-bottom: 20px;
+    }
+
+    .handle-input {
+        width: 200px;
+        display: inline-block;
+    }
+
+    .mr10 {
+        margin-right: 10px;
+    }
+</style>

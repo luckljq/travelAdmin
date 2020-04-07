@@ -40,6 +40,10 @@
                 </el-breadcrumb>
             </div>
             <div class="container">
+                <div class="handle-box">
+                    <el-input v-model="imageUrl" placeholder="图片地址查询" class="handle-input mr10"></el-input>
+                    <el-button type="primary" icon="el-icon-search" @click="getImages">搜索</el-button>
+                </div>
                 <tableCom :tableData="tableData2" :rowNum="this.rowNum2" :tableEle="tableEle2" :total="this.total2"
                           v-on:getPageNumber="getPageNumber2">
                     <el-table-column slot="btn-operation" fixed="right" label="操作" width="300px">
@@ -161,6 +165,7 @@
     export default {
         data () {
             return{
+                l:'',
                 fileList:[],
                 dialogImageUrl: '',
                 dialogVisible:false,
@@ -253,6 +258,7 @@
             //获取图片列表2
             getImages() {
                 getSpotImages(this.id, {
+                    url:this.imageUrl,
                     pageNumber:this.pageNumber2,
                     pageSize: this.rowNum2
                 }).then(res => {

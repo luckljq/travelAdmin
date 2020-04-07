@@ -31,6 +31,16 @@ export default new Router({
                     component: resolve => require(['../components/sev/StrategyManage.vue'], resolve),
                     meta: { title: '攻略管理' }
                 },
+                {
+                    path: '/diary',
+                    component: resolve => require(['../components/sev/Diary.vue'], resolve),
+                    meta: { title: '游记管理' }
+                },
+                {
+                    path: '/question',
+                    component: resolve => require(['../components/sev/Question.vue'], resolve),
+                    meta: { title: '问答管理' }
+                },
                 //内容管理start
                 {
                     path: '/notice',
