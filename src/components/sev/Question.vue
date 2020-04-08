@@ -44,13 +44,20 @@
                                      label="操作"
                     >
                         <template slot-scope="scope">
-                            <el-button type="text" icon="el-icon-info" @click="showDetails(scope.row)">详情</el-button>
                             <el-button type="text" icon="el-icon-delete" class="red" @click="openDelete(scope.row)" >删除</el-button>
                         </template>
                     </el-table-column>
                 </tableCom>
             </div>
         </div>
+        <!-- 删除提示框 -->
+        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+            <div class="del-dialog-cnt">是否确定删除？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="delVisible = false">取 消</el-button>
+                <el-button type="primary" @click="deleteQuestions()">确 定</el-button>
+              </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -102,10 +109,11 @@
     import {Message} from 'element-ui'
     import tableCom from '../common/Table.vue'
     import {getSpots} from '../../api/sevApi'
-    import {getQuestions} from '../../api/active'
+    import {getQuestions,deleteQuestion} from '../../api/active'
     export default {
         data (){
             return {
+                delVisible:false,
                 show: false,
                 //表格初始化
                 tableData: [],
@@ -127,8 +135,19 @@
             }
         },
         methods: {
-            openDelete() {
-
+            deleteQuestions() {
+                deleteQuestion(this.spotId).then(res => {
+                    Message.success({
+                        message:res.message,
+                        center: true
+                    });
+                    this.getQuestion();
+                    this.delVisible = false;
+                })
+            },
+            openDelete(row) {
+                this.spotId = row.id;
+                this.delVisible = true;
             },
             showDetails() {
 
