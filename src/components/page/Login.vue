@@ -72,7 +72,7 @@
                             token:this.items.token
                         });
                         sessionStorage.setItem('UserState', JSON.stringify(this.$store.state.user));
-                        this.$router.push('/dashboard');
+                        this.$router.push('/spots');
                     }
                 });
             }

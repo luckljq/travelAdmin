@@ -165,6 +165,7 @@
     export default {
         data () {
             return{
+                imageUrl:'',
                 l:'',
                 fileList:[],
                 dialogImageUrl: '',
@@ -272,6 +273,7 @@
             },
             //获取图片列表
             showImage(row) {
+                this.imageUrl = '';
                 this.id = row.scenicSpotId;
                 this.spotName = row.scenicSpotName;
                 getSpotImages(this.id, {

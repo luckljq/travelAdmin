@@ -26,7 +26,7 @@
                 <el-table-column slot="btn-operation"
                                  fixed="right"
                                  label="操作"
-                                 width="300px">
+                                 width="350px">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-info" @click="handleRole(scope.row)">分配角色</el-button>
                         <el-button
